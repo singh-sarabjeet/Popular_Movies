@@ -2,7 +2,6 @@ package com.example.sjsingh.popularmovies;
 
 import android.app.Activity;
 import android.content.Context;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +24,7 @@ public class ImageListAdapter extends ArrayAdapter<GridItem> {
 
     public ImageListAdapter(Context mContext,ArrayList<GridItem> mGridData) {
         super(mContext, 0, mGridData);
-
+        this.mContext = mContext;
     }
 
     public void setGridData(ArrayList<GridItem> mGridData){

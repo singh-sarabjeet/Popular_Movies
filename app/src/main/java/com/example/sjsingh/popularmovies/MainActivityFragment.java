@@ -2,8 +2,6 @@ package com.example.sjsingh.popularmovies;
 
 
 import android.app.Fragment;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -69,11 +67,50 @@ public class MainActivityFragment extends Fragment {
         mProgressBar.setVisibility(View.VISIBLE);
     }
 
+    private ArrayList<GridItem> formatDataFromJson(String movieJsonStr) throws JSONException {
 
-    public class FetchMovie extends AsyncTask<Void, Void, String[]> {
+        final String MOVIE_RESULTS = "results";
+        final String MOVIE_TITLE = "original_title";
+        final String MOVIE_SYNOPSIS = "overview";
+        final String MOVIE_POSTER_PATH = "poster_path";
+        final String MOVIE_RATING = "vote_average";
+        final String MOVIE_RELEASE_DATE = "release_date";
+        final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p/w185/";
+
+        JSONObject movieJson = new JSONObject(movieJsonStr);
+        JSONArray movieArray = movieJson.getJSONArray(MOVIE_RESULTS);
+
+        String[] resultStrs = new String[20];
+        GridItem item;
+
+        for (int i = 0; i < movieArray.length(); i++) {
+            JSONObject movieResultObj = movieArray.getJSONObject(i);
+
+            String title = movieResultObj.getString(MOVIE_TITLE);
+            String synopsis = movieResultObj.getString(MOVIE_SYNOPSIS);
+            String poster_path = movieResultObj.getString(MOVIE_POSTER_PATH);
+            String rating = movieResultObj.getString(MOVIE_RATING);
+            String release_date = movieResultObj.getString(MOVIE_RELEASE_DATE);
+
+            String POSTER_URL = IMAGE_BASE_URL + poster_path;
+
+            item = new GridItem();
+            item.setTitle(title);
+            item.setImage(POSTER_URL);
+
+            mGridData.add(item);
+
+        }
+
+        return mGridData;
+
+
+    }
+
+    public class FetchMovie extends AsyncTask<Void, Void, ArrayList<GridItem>> {
 
         @Override
-        protected String[] doInBackground(Void... params) {
+        protected ArrayList<GridItem> doInBackground(Void... params) {
 
 
             HttpURLConnection urlConnection = null;
@@ -132,7 +169,8 @@ public class MainActivityFragment extends Fragment {
             }
 
             try {
-                return formatDataFromJson(movieJSONStr);
+                ArrayList<GridItem> results = formatDataFromJson(movieJSONStr);
+                return results;
             } catch (JSONException e) {
                 Log.e(LOG_TAG, e.getMessage(), e);
                 e.printStackTrace();
@@ -141,57 +179,14 @@ public class MainActivityFragment extends Fragment {
         }
 
         @Override
-        protected void onPostExecute(String[] result) {
+        protected void onPostExecute(ArrayList<GridItem> result) {
             if (result != null) {
                 mGridAdapter.clear();
-                mGridAdapter.setGridData(mGridData);
+                mGridAdapter.setGridData(result);
                 mProgressBar.setVisibility(View.GONE);
 
-                    //TODO: return object instead of string array movieDATA
                 }
             }
-        }
-
-        private String[] formatDataFromJson(String movieJsonStr)throws JSONException{
-
-            final String MOVIE_RESULTS = "results";
-            final String MOVIE_TITLE = "original_title";
-            final String MOVIE_SYNOPSIS = "overview";
-            final String MOVIE_POSTER_PATH = "poster_path";
-            final String MOVIE_RATING = "vote_average";
-            final String MOVIE_RELEASE_DATE = "release_date";
-            final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p/w185/";
-
-            JSONObject movieJson = new JSONObject(movieJsonStr);
-            JSONArray movieArray = movieJson.getJSONArray(MOVIE_RESULTS);
-
-            String[] resultStrs = new String[20];
-            GridItem item;
-
-            for(int i = 0;i<movieArray.length();i++)
-            {
-                JSONObject movieResultObj = movieArray.getJSONObject(i);
-
-                String title = movieResultObj.getString(MOVIE_TITLE);
-                String synopsis = movieResultObj.getString(MOVIE_SYNOPSIS);
-                String poster_path = movieResultObj.getString(MOVIE_POSTER_PATH);
-                String rating = movieResultObj.getString(MOVIE_RATING);
-                String release_date = movieResultObj.getString(MOVIE_RELEASE_DATE);
-
-                String POSTER_URL = IMAGE_BASE_URL + poster_path;
-
-                item = new GridItem();
-                item.setTitle(title);
-                item.setImage(POSTER_URL);
-
-                mGridData.add(item);
-
-                resultStrs[i] = synopsis+"//"+rating+"//"+release_date;
-            }
-
-            return resultStrs;
-
-
         }
 
     }
