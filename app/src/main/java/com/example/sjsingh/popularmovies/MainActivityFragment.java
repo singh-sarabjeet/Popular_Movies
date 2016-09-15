@@ -2,15 +2,19 @@ package com.example.sjsingh.popularmovies;
 
 
 import android.app.Fragment;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,6 +34,7 @@ import java.util.ArrayList;
 public class MainActivityFragment extends Fragment {
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
+
     private GridView mGridView;
     private ProgressBar mProgressBar;
     private ImageListAdapter mGridAdapter;
@@ -38,13 +43,14 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
+        setHasOptionsMenu(true);
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         mGridView = (GridView) rootView.findViewById(R.id.gridview_poster);
@@ -54,17 +60,29 @@ public class MainActivityFragment extends Fragment {
         mGridAdapter = new ImageListAdapter(getActivity(), mGridData);
         mGridView.setAdapter(mGridAdapter);
 
-        //Starting download
-        updateData();
+        mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(getActivity(), "detail Activity working", Toast.LENGTH_SHORT).show();
+            }
+        });
 
+//Starting download
+        updateData();
 
         return rootView;
 
     }
 
-    public void updateData(){
+    public void updateData() {
         new FetchMovie().execute();
         mProgressBar.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        updateData();
     }
 
     private ArrayList<GridItem> formatDataFromJson(String movieJsonStr) throws JSONException {
@@ -80,7 +98,7 @@ public class MainActivityFragment extends Fragment {
         JSONObject movieJson = new JSONObject(movieJsonStr);
         JSONArray movieArray = movieJson.getJSONArray(MOVIE_RESULTS);
 
-        String[] resultStrs = new String[20];
+
         GridItem item;
 
         for (int i = 0; i < movieArray.length(); i++) {
@@ -97,11 +115,12 @@ public class MainActivityFragment extends Fragment {
             item = new GridItem();
             item.setTitle(title);
             item.setImage(POSTER_URL);
-
+            Log.v(LOG_TAG, POSTER_URL);
             mGridData.add(item);
 
         }
 
+        Log.v(LOG_TAG, "mGridData Received");
         return mGridData;
 
 
@@ -116,10 +135,23 @@ public class MainActivityFragment extends Fragment {
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
             String movieJSONStr = null;
+            String BASE_URL;
 
             try {
 
-                final String BASE_URL = "http://api.themoviedb.org/3/movie/popular?";
+                SharedPreferences sharedPrefs =
+                        PreferenceManager.getDefaultSharedPreferences(getActivity());
+                String orderType = sharedPrefs.getString(
+                        getString(R.string.pref_order_key),
+                        getString(R.string.pref_most_popular));
+
+
+                if (orderType.equals(getString(R.string.pref_top_rated))) {
+                    BASE_URL = "http://api.themoviedb.org/3/movie/top_rated?";
+                } else {
+                    BASE_URL = "http://api.themoviedb.org/3/movie/popular?";
+                }
+
                 final String API_KEY = "api_key";
 
                 Uri builtUri = Uri.parse(BASE_URL).buildUpon()
@@ -136,6 +168,7 @@ public class MainActivityFragment extends Fragment {
                 InputStream inputStream = urlConnection.getInputStream();
                 StringBuffer buffer = new StringBuffer();
                 if (inputStream == null) {
+                    Log.v(LOG_TAG, "inputStream is null");
                     return null;
                 }
                 reader = new BufferedReader(new InputStreamReader(inputStream));
@@ -147,9 +180,11 @@ public class MainActivityFragment extends Fragment {
                 }
 
                 if (buffer.length() == 0) {
+                    Log.v(LOG_TAG, "Buffer Length is null");
                     return null;
                 }
                 movieJSONStr = buffer.toString();
+                Log.v(LOG_TAG, movieJSONStr);
 
 
             } catch (IOException e) {
@@ -169,7 +204,9 @@ public class MainActivityFragment extends Fragment {
             }
 
             try {
+                Log.v(LOG_TAG, "results received");
                 ArrayList<GridItem> results = formatDataFromJson(movieJSONStr);
+
                 return results;
             } catch (JSONException e) {
                 Log.e(LOG_TAG, e.getMessage(), e);
@@ -180,14 +217,17 @@ public class MainActivityFragment extends Fragment {
 
         @Override
         protected void onPostExecute(ArrayList<GridItem> result) {
+
+            Log.v(LOG_TAG, "onPOstExecute is executed");
             if (result != null) {
-                mGridAdapter.clear();
+
                 mGridAdapter.setGridData(result);
                 mProgressBar.setVisibility(View.GONE);
 
-                }
+
             }
         }
-
     }
+
+}
 

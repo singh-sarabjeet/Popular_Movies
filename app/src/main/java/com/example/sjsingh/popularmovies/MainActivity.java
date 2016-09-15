@@ -1,9 +1,15 @@
 package com.example.sjsingh.popularmovies;
 
-import android.support.v7.app.AppCompatActivity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity {
+
+    static final int SORT_ORDER_REPLY = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -16,13 +22,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-  /*  @Override
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
     }
-// TODO: Use these methods to implement settings in the menu
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -33,13 +39,26 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             Intent settingsIntent = new Intent(this, SettingsActivity.class);
-            startActivity(settingsIntent);
+            startActivityForResult(settingsIntent, SORT_ORDER_REPLY);
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
-    */
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == SORT_ORDER_REPLY) {
+            if (resultCode == RESULT_OK) {
+                String msg = data.getStringExtra("Preference_change");
+                Log.v("Preference Changed", msg);
+                MainActivityFragment refresh = new MainActivityFragment();
+                refresh.updateData();
+            }
+        }
+    }
+
 }
 
 

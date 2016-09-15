@@ -49,10 +49,11 @@ public class ImageListAdapter extends ArrayAdapter<GridItem> {
         }
 
         GridItem item = mGridData.get(position);
-        holder.titleTextView.setText(item.getTitle()); //TODO: Add Html.fromhtml if error occurs
+        holder.titleTextView.setText(item.getTitle());
 
         Picasso.with(mContext)
                 .load(item.getImage())
+                .fit()
                 .into(holder.imageView);
         return rootView;
     }
