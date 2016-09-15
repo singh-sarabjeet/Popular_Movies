@@ -74,17 +74,17 @@ public class MainActivityFragment extends Fragment {
 
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateData();
+    }
+
     public void updateData() {
 
         mGridAdapter.clear();
         new FetchMovie().execute();
         mProgressBar.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        updateData();
     }
 
     private ArrayList<GridItem> formatDataFromJson(String movieJsonStr) throws JSONException {
