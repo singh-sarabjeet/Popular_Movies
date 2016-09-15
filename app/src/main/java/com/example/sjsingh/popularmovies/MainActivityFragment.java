@@ -75,6 +75,7 @@ public class MainActivityFragment extends Fragment {
     }
 
     public void updateData() {
+        mGridAdapter.clear();
         new FetchMovie().execute();
         mProgressBar.setVisibility(View.VISIBLE);
     }

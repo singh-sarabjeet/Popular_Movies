@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 String msg = data.getStringExtra("Preference_change");
                 Log.v("Preference Changed", msg);
+
                 MainActivityFragment refresh = new MainActivityFragment();
                 refresh.updateData();
             }
