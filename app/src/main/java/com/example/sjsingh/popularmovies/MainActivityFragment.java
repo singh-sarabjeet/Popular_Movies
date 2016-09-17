@@ -2,13 +2,20 @@ package com.example.sjsingh.popularmovies;
 
 
 import android.app.Fragment;
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -33,17 +40,49 @@ import java.util.ArrayList;
  */
 public class MainActivityFragment extends Fragment {
 
+    static final int SORT_ORDER_REPLY = 1;
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
-
     private GridView mGridView;
     private ProgressBar mProgressBar;
     private ImageListAdapter mGridAdapter;
     private ArrayList<GridItem> mGridData;
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+
+        inflater.inflate(R.menu.main_menu, menu);
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+
+        if (id == R.id.action_settings) {
+            Intent settingsIntent = new Intent(getActivity(), SettingsActivity.class);
+            startActivityForResult(settingsIntent, SORT_ORDER_REPLY);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultcode, Intent data) {
+        super.onActivityResult(requestCode, resultcode, data);
+
+        if (requestCode == SORT_ORDER_REPLY) {
+
+            updateData();
+        }
     }
 
 
@@ -63,28 +102,51 @@ public class MainActivityFragment extends Fragment {
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getActivity(), "detail Activity working", Toast.LENGTH_SHORT).show();
+                GridItem item = mGridData.get(position);
+                Intent intent = new Intent(getActivity(), DetailActivity.class);
+                intent.putExtra(getString(R.string.title_key), item.getTitle());
+                intent.putExtra(getString(R.string.plot_key), item.getPlot());
+                intent.putExtra(getString(R.string.rating_key), item.getRating());
+                intent.putExtra(getString(R.string.release_date_key), item.getReleaseDate());
+                intent.putExtra(getString(R.string.poster_key), item.getImage());
+                intent.putExtra(getString(R.string.backdrop_key), item.getBackdrop());
+                startActivity(intent);
             }
         });
 
-//Starting download
         updateData();
-
         return rootView;
 
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        updateData();
-    }
 
     public void updateData() {
 
-        mGridAdapter.clear();
-        new FetchMovie().execute();
-        mProgressBar.setVisibility(View.VISIBLE);
+        if (!haveNetworkConnection()) {
+            mProgressBar.setVisibility(View.GONE);
+            Toast.makeText(getActivity(), "No Internet Connection", Toast.LENGTH_SHORT).show();
+        } else {
+            mGridAdapter.clear();
+            new FetchMovie().execute();
+            mProgressBar.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private boolean haveNetworkConnection() {
+        boolean haveConnectedWifi = false;
+        boolean haveConnectedMobile = false;
+
+        ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo[] netInfo = cm.getAllNetworkInfo();
+        for (NetworkInfo ni : netInfo) {
+            if (ni.getTypeName().equalsIgnoreCase("WIFI"))
+                if (ni.isConnected())
+                    haveConnectedWifi = true;
+            if (ni.getTypeName().equalsIgnoreCase("MOBILE"))
+                if (ni.isConnected())
+                    haveConnectedMobile = true;
+        }
+        return haveConnectedWifi || haveConnectedMobile;
     }
 
     private ArrayList<GridItem> formatDataFromJson(String movieJsonStr) throws JSONException {
@@ -95,7 +157,9 @@ public class MainActivityFragment extends Fragment {
         final String MOVIE_POSTER_PATH = "poster_path";
         final String MOVIE_RATING = "vote_average";
         final String MOVIE_RELEASE_DATE = "release_date";
-        final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p/w185/";
+        final String BACKDROP = "backdrop_path";
+        final String POSTER_BASE_URL = "http://image.tmdb.org/t/p/w185/";
+        final String BACKDROP_BASE_URL = "http://image.tmdb.org/t/p/w780/";
 
         JSONObject movieJson = new JSONObject(movieJsonStr);
         JSONArray movieArray = movieJson.getJSONArray(MOVIE_RESULTS);
@@ -107,28 +171,36 @@ public class MainActivityFragment extends Fragment {
             JSONObject movieResultObj = movieArray.getJSONObject(i);
 
             String title = movieResultObj.getString(MOVIE_TITLE);
-            String synopsis = movieResultObj.getString(MOVIE_SYNOPSIS);
+
             String poster_path = movieResultObj.getString(MOVIE_POSTER_PATH);
+            String backdrop_path = movieResultObj.getString(BACKDROP);
+
+            String synopsis = movieResultObj.getString(MOVIE_SYNOPSIS);
             String rating = movieResultObj.getString(MOVIE_RATING);
             String release_date = movieResultObj.getString(MOVIE_RELEASE_DATE);
 
-            String POSTER_URL = IMAGE_BASE_URL + poster_path;
+            String POSTER_URL = POSTER_BASE_URL + poster_path;
+            String BACKDROP_URL = BACKDROP_BASE_URL + backdrop_path;
 
             item = new GridItem();
+
             item.setTitle(title);
             item.setImage(POSTER_URL);
-            Log.v(LOG_TAG, POSTER_URL);
+            item.setPlot(synopsis);
+            item.setRating(rating);
+            item.setReleaseDate(release_date);
+            item.setBackdrop(BACKDROP_URL);
+
             mGridData.add(item);
 
         }
 
-        Log.v(LOG_TAG, "mGridData Received");
         return mGridData;
-
 
     }
 
     public class FetchMovie extends AsyncTask<Void, Void, ArrayList<GridItem>> {
+
 
         @Override
         protected ArrayList<GridItem> doInBackground(Void... params) {
@@ -138,6 +210,7 @@ public class MainActivityFragment extends Fragment {
             BufferedReader reader = null;
             String movieJSONStr = null;
             String BASE_URL;
+
 
             try {
 
@@ -161,7 +234,6 @@ public class MainActivityFragment extends Fragment {
 
 
                 URL url = new URL(builtUri.toString());
-                Log.v(LOG_TAG, url.toString());
 
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
@@ -170,14 +242,13 @@ public class MainActivityFragment extends Fragment {
                 InputStream inputStream = urlConnection.getInputStream();
                 StringBuffer buffer = new StringBuffer();
                 if (inputStream == null) {
-                    Log.v(LOG_TAG, "inputStream is null");
+
                     return null;
                 }
                 reader = new BufferedReader(new InputStreamReader(inputStream));
 
                 String line;
                 while ((line = reader.readLine()) != null) {
-
                     buffer.append(line).append("\n");
                 }
 
@@ -186,8 +257,6 @@ public class MainActivityFragment extends Fragment {
                     return null;
                 }
                 movieJSONStr = buffer.toString();
-                Log.v(LOG_TAG, movieJSONStr);
-
 
             } catch (IOException e) {
                 Log.e(LOG_TAG, "Error", e);
@@ -206,9 +275,7 @@ public class MainActivityFragment extends Fragment {
             }
 
             try {
-                Log.v(LOG_TAG, "results received");
                 ArrayList<GridItem> results = formatDataFromJson(movieJSONStr);
-
                 return results;
             } catch (JSONException e) {
                 Log.e(LOG_TAG, e.getMessage(), e);
@@ -220,13 +287,9 @@ public class MainActivityFragment extends Fragment {
         @Override
         protected void onPostExecute(ArrayList<GridItem> result) {
 
-            Log.v(LOG_TAG, "onPOstExecute is executed");
             if (result != null) {
-
                 mGridAdapter.setGridData(result);
                 mProgressBar.setVisibility(View.GONE);
-
-
             }
         }
     }

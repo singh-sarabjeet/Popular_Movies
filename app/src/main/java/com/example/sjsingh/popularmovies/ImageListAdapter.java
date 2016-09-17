@@ -22,12 +22,12 @@ public class ImageListAdapter extends ArrayAdapter<GridItem> {
 
     private ArrayList<GridItem> mGridData = new ArrayList<GridItem>();
 
-    public ImageListAdapter(Context mContext,ArrayList<GridItem> mGridData) {
+    public ImageListAdapter(Context mContext, ArrayList<GridItem> mGridData) {
         super(mContext, 0, mGridData);
         this.mContext = mContext;
     }
 
-    public void setGridData(ArrayList<GridItem> mGridData){
+    public void setGridData(ArrayList<GridItem> mGridData) {
         this.mGridData = mGridData;
         notifyDataSetChanged();
     }
@@ -53,7 +53,6 @@ public class ImageListAdapter extends ArrayAdapter<GridItem> {
 
         Picasso.with(mContext)
                 .load(item.getImage())
-                .fit()
                 .into(holder.imageView);
         return rootView;
     }
