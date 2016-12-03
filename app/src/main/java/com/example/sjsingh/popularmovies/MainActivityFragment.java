@@ -110,6 +110,7 @@ public class MainActivityFragment extends Fragment {
                 intent.putExtra(getString(R.string.release_date_key), item.getReleaseDate());
                 intent.putExtra(getString(R.string.poster_key), item.getImage());
                 intent.putExtra(getString(R.string.backdrop_key), item.getBackdrop());
+                intent.putExtra("Trailer", item.getTrailer());
                 startActivity(intent);
             }
         });
@@ -158,8 +159,11 @@ public class MainActivityFragment extends Fragment {
         final String MOVIE_RATING = "vote_average";
         final String MOVIE_RELEASE_DATE = "release_date";
         final String BACKDROP = "backdrop_path";
+        final String ID = "id";
         final String POSTER_BASE_URL = "http://image.tmdb.org/t/p/w185/";
         final String BACKDROP_BASE_URL = "http://image.tmdb.org/t/p/w780/";
+        final String TRAILER_BASE_URL = "http://api.themoviedb.org/3/movie/";
+
 
         JSONObject movieJson = new JSONObject(movieJsonStr);
         JSONArray movieArray = movieJson.getJSONArray(MOVIE_RESULTS);
@@ -178,9 +182,12 @@ public class MainActivityFragment extends Fragment {
             String synopsis = movieResultObj.getString(MOVIE_SYNOPSIS);
             String rating = movieResultObj.getString(MOVIE_RATING);
             String release_date = movieResultObj.getString(MOVIE_RELEASE_DATE);
+            String id = movieResultObj.getString(ID);
 
             String POSTER_URL = POSTER_BASE_URL + poster_path;
             String BACKDROP_URL = BACKDROP_BASE_URL + backdrop_path;
+            String TRAILER_BASE = TRAILER_BASE_URL + id + "/videos?";
+
 
             item = new GridItem();
 
@@ -190,6 +197,7 @@ public class MainActivityFragment extends Fragment {
             item.setRating(rating);
             item.setReleaseDate(release_date);
             item.setBackdrop(BACKDROP_URL);
+            item.setTrailer(TRAILER_BASE);
 
             mGridData.add(item);
 
@@ -234,6 +242,8 @@ public class MainActivityFragment extends Fragment {
 
 
                 URL url = new URL(builtUri.toString());
+
+                Log.d(LOG_TAG, url.toString());
 
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");

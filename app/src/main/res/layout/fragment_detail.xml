@@ -97,5 +97,50 @@
             android:layout_marginLeft="@dimen/standard_margin"
             android:layout_marginRight="@dimen/standard_margin"
             android:textSize="@dimen/text_size_small" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/standard_margin"
+            android:text="@string/trailers"
+            android:textSize="@dimen/text_size_medium"
+            android:textStyle="bold" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/line_thickness"
+            android:layout_margin="@dimen/standard_margin"
+            android:background="@android:color/black" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/trailer_recycle_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:margin_bottom="@dimen/standard_margin"
+            android:orientation="horizontal"
+            android:scrollbars="horizontal" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/standard_margin"
+            android:text="@string/reviews"
+            android:textSize="@dimen/text_size_medium"
+            android:textStyle="bold" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/line_thickness"
+            android:layout_margin="@dimen/standard_margin"
+            android:background="@android:color/black" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/review_recycle_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:margin_bottom="@dimen/standard_margin"
+            android:orientation="horizontal"
+            android:scrollbars="horizontal" />
+
     </LinearLayout>
 </ScrollView>

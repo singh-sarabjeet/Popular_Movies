@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,8 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 public class DetailActivity extends AppCompatActivity {
+
+    private static final String LOG_TAG = DetailActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +42,7 @@ public class DetailActivity extends AppCompatActivity {
         String plot;
         String poster;
         String backdrop;
+        String trailer;
         ImageView poster_image;
         ImageView backdrop_image;
 
@@ -59,6 +63,10 @@ public class DetailActivity extends AppCompatActivity {
                 plot = intent.getStringExtra(getString(R.string.plot_key));
                 poster = intent.getStringExtra(getString(R.string.poster_key));
                 backdrop = intent.getStringExtra(getString(R.string.backdrop_key));
+
+                trailer = intent.getStringExtra("Trailer");
+
+                Log.d(LOG_TAG, trailer);
                 r_date = "Released:" + r_date;
                 rating = rating + "/10";
 
@@ -87,6 +95,83 @@ public class DetailActivity extends AppCompatActivity {
             }
             return rootView;
         }
+
+        /* EXPERIMENTAL*/
+
+    /*    public class FetchTrailer extends AsyncTask<Void, Void, ArrayList<GridItem>> {
+
+
+            @Override
+            protected ArrayList<GridItem> doInBackground(Void... params) {
+
+
+                HttpURLConnection urlConnection = null;
+                BufferedReader reader = null;
+                String movieJSONStr = null;
+                String BASE_URL = trailer;
+
+
+                    final String API_KEY = "api_key";
+
+                    Uri builtUri = Uri.parse(BASE_URL).buildUpon()
+                            .appendQueryParameter(API_KEY, BuildConfig.MY_MOVIE_DB_API_KEY).build();
+//todo: Get the youtube id from the response and create a link for the trailer
+todo: Do the same for the reviews
+                    URL url = new URL(builtUri.toString());
+
+                    Log.d(LOG_TAG,url.toString());
+
+                    urlConnection = (HttpURLConnection) url.openConnection();
+                    urlConnection.setRequestMethod("GET");
+                    urlConnection.connect();
+
+                    InputStream inputStream = urlConnection.getInputStream();
+                    StringBuffer buffer = new StringBuffer();
+                    if (inputStream == null) {
+
+                        return null;
+                    }
+                    reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        buffer.append(line).append("\n");
+                    }
+
+                    if (buffer.length() == 0) {
+                        Log.v(LOG_TAG, "Buffer Length is null");
+                        return null;
+                    }
+                    movieJSONStr = buffer.toString();
+
+                } catch (IOException e) {
+                    Log.e(LOG_TAG, "Error", e);
+                    return null;
+                } finally {
+                    if (urlConnection != null) {
+                        urlConnection.disconnect();
+                    }
+                    if (reader != null) {
+                        try {
+                            reader.close();
+                        } catch (final IOException e) {
+                            Log.e(LOG_TAG, "Error Closing Stream", e);
+                        }
+                    }
+                }
+
+                try {
+                    ArrayList<GridItem> results = formatDataFromJson(movieJSONStr);
+                    return results;
+                } catch (JSONException e) {
+                    Log.e(LOG_TAG, e.getMessage(), e);
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            */
+
 
     }
 }
