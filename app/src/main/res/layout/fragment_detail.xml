@@ -98,12 +98,6 @@
             android:layout_marginRight="@dimen/standard_margin"
             android:textSize="@dimen/text_size_small" />
         
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/line_thickness"
-            android:layout_margin="@dimen/standard_margin"
-            android:background="@android:color/black" />
-        
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -112,19 +106,19 @@
             android:textSize="@dimen/text_size_medium"
             android:textStyle="bold" />
         
-        <android.support.v7.widget.RecyclerView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:id="@+id/trailer_recycle_view"
-            android:scrollbars = "horizontal"/>
-        
-        
         <View
             android:layout_width="match_parent"
             android:layout_height="@dimen/line_thickness"
             android:layout_margin="@dimen/standard_margin"
             android:background="@android:color/black" />
+          
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:id="@+id/trailer_recycle_view"
+            android:scrollbars = "horizontal"
+            android:margin_bottom="@dimen/standard_margin"/>
         
         <TextView
             android:layout_width="wrap_content"
@@ -134,12 +128,19 @@
             android:textSize="@dimen/text_size_medium"
             android:textStyle="bold" />
         
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/line_thickness"
+            android:layout_margin="@dimen/standard_margin"
+            android:background="@android:color/black" />
+        
         <android.support.v7.widget.RecyclerView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:id="@+id/review_recycle_view"
-            android:scrollbars = "horizontal"/>
+            android:scrollbars = "horizontal"
+            android:margin_bottom="@dimen/standard_margin"/>
         
     </LinearLayout>
 </ScrollView>
