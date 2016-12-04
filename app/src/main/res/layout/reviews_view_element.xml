@@ -6,10 +6,12 @@
     <TextView
         android:id="@+id/review_author_textView"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="Author" />
 
     <TextView
         android:id="@+id/review_textView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="This textView points to the review provided by the author" />
 </LinearLayout>

@@ -10,4 +10,5 @@
     <color name="golden">#FFD700</color>
 
     <color name="translucent_black">#55000000</color>
+    <color name="color_white">#FFFFFFFF</color>
 </resources>

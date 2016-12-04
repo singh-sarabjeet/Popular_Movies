@@ -116,7 +116,7 @@
             android:id="@+id/trailer_recycle_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:margin_bottom="@dimen/standard_margin"
+            android:layout_marginBottom="@dimen/standard_margin"
             android:orientation="horizontal"
             android:scrollbars="horizontal" />
 
@@ -138,7 +138,7 @@
             android:id="@+id/review_recycle_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:margin_bottom="@dimen/standard_margin"
+
             android:orientation="horizontal"
             android:scrollbars="horizontal" />
 
