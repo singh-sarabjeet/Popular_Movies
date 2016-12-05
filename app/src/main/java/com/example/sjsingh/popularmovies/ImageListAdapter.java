@@ -25,6 +25,7 @@ public class ImageListAdapter extends ArrayAdapter<GridItem> {
     public ImageListAdapter(Context mContext, ArrayList<GridItem> mGridData) {
         super(mContext, 0, mGridData);
         this.mContext = mContext;
+        this.mGridData = mGridData;
     }
 
     public void setGridData(ArrayList<GridItem> mGridData) {

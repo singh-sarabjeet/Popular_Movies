@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +15,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -36,6 +40,8 @@ public class DetailActivity extends AppCompatActivity {
 
     public static class DetailFragment extends Fragment {
 
+        private static ArrayList<TrailerItem> myDataSet
+                = new ArrayList<TrailerItem>();
         String title;
         String rating;
         String r_date;
@@ -45,6 +51,10 @@ public class DetailActivity extends AppCompatActivity {
         String trailer;
         ImageView poster_image;
         ImageView backdrop_image;
+        private RecyclerView mRecyclerView;
+        private RecyclerView.Adapter mAdapter;
+        private RecyclerView.LayoutManager mLayoutManager;
+
 
         public DetailFragment() {
         }
@@ -90,6 +100,15 @@ public class DetailActivity extends AppCompatActivity {
                 Picasso.with(getContext())
                         .load(backdrop)
                         .into(backdrop_image);
+
+                // Trailers
+                mRecyclerView = (RecyclerView) rootView.findViewById(R.id.trailer_recycle_view);
+                mLayoutManager = new LinearLayoutManager(getActivity());
+                mRecyclerView.setLayoutManager(mLayoutManager);
+
+                mAdapter = new TrailerAdapter(myDataSet);
+                mRecyclerView.setAdapter(mAdapter);
+
 
 
             }
