@@ -1,6 +1,8 @@
 package com.example.sjsingh.popularmovies;
 
 import android.content.Intent;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
@@ -16,6 +18,16 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class DetailActivity extends AppCompatActivity {
@@ -76,7 +88,7 @@ public class DetailActivity extends AppCompatActivity {
 
                 trailer = intent.getStringExtra("Trailer");
 
-                Log.d(LOG_TAG, trailer);
+
                 r_date = "Released:" + r_date;
                 rating = rating + "/10";
 
@@ -106,6 +118,7 @@ public class DetailActivity extends AppCompatActivity {
                 mLayoutManager = new LinearLayoutManager(getActivity());
                 mRecyclerView.setLayoutManager(mLayoutManager);
 
+                new FetchTrailers().execute();
                 mAdapter = new TrailerAdapter(myDataSet);
                 mRecyclerView.setAdapter(mAdapter);
 
@@ -115,30 +128,68 @@ public class DetailActivity extends AppCompatActivity {
             return rootView;
         }
 
-        /* EXPERIMENTAL*/
+        private ArrayList<TrailerItem> formatDataFromJson(String movieJsonStr) throws JSONException {
 
-    /*    public class FetchTrailer extends AsyncTask<Void, Void, ArrayList<GridItem>> {
+            final String MOVIE_RESULTS = "results";
+            final String KEY = "key";
+
+
+            JSONObject movieJson = new JSONObject(movieJsonStr);
+            JSONArray movieArray = movieJson.getJSONArray(MOVIE_RESULTS);
+
+
+            TrailerItem item;
+
+            for (int i = 0; i < movieArray.length(); i++) {
+                JSONObject movieResultObj = movieArray.getJSONObject(i);
+
+
+                String key = movieResultObj.getString(KEY);
+
+                String thumbNail = "https://img.youtube.com/vi/" + key + "/mqdefault.jpg";
+                String trailerUrl = "https://www.youtube.com/watch?v=" + key;
+
+
+                item = new TrailerItem();
+
+                item.setImage(thumbNail);
+                item.setTrailer(trailerUrl);
+
+
+                myDataSet.add(item);
+
+            }
+
+            return myDataSet;
+
+        }
+
+        public class FetchTrailers extends AsyncTask<Void, Void, ArrayList<TrailerItem>> {
 
 
             @Override
-            protected ArrayList<GridItem> doInBackground(Void... params) {
+            protected ArrayList<TrailerItem> doInBackground(Void... params) {
 
 
                 HttpURLConnection urlConnection = null;
                 BufferedReader reader = null;
                 String movieJSONStr = null;
-                String BASE_URL = trailer;
+                String BASE_URL;
 
+
+                try {
+
+                    BASE_URL = trailer;
 
                     final String API_KEY = "api_key";
 
                     Uri builtUri = Uri.parse(BASE_URL).buildUpon()
                             .appendQueryParameter(API_KEY, BuildConfig.MY_MOVIE_DB_API_KEY).build();
-//todo: Get the youtube id from the response and create a link for the trailer
-todo: Do the same for the reviews
+
+
                     URL url = new URL(builtUri.toString());
 
-                    Log.d(LOG_TAG,url.toString());
+                    Log.d(LOG_TAG, url.toString());
 
                     urlConnection = (HttpURLConnection) url.openConnection();
                     urlConnection.setRequestMethod("GET");
@@ -180,7 +231,7 @@ todo: Do the same for the reviews
                 }
 
                 try {
-                    ArrayList<GridItem> results = formatDataFromJson(movieJSONStr);
+                    ArrayList<TrailerItem> results = formatDataFromJson(movieJSONStr);
                     return results;
                 } catch (JSONException e) {
                     Log.e(LOG_TAG, e.getMessage(), e);
@@ -189,7 +240,7 @@ todo: Do the same for the reviews
                 return null;
             }
 
-            */
+        }
 
 
     }

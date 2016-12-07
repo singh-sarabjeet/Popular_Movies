@@ -7,6 +7,7 @@ package com.example.sjsingh.popularmovies;
 public class TrailerItem {
 
     private String image;
+    private String trailer;
 
     public TrailerItem() {
         super();
@@ -20,6 +21,15 @@ public class TrailerItem {
     public void setImage(String image) {
         this.image = image;
     }
+
+    public String getTrailer() {
+        return trailer;
+    }
+
+    public void setTrailer(String trailer) {
+        this.trailer = trailer;
+    }
+
 }
 
 
