@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -72,6 +73,12 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+
+        }
+
+        @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
 
@@ -113,18 +120,18 @@ public class DetailActivity extends AppCompatActivity {
                         .load(backdrop)
                         .into(backdrop_image);
 
-                // Trailers
-                mRecyclerView = (RecyclerView) rootView.findViewById(R.id.trailer_recycle_view);
-                mLayoutManager = new LinearLayoutManager(getActivity());
-                mRecyclerView.setLayoutManager(mLayoutManager);
-
-                new FetchTrailers().execute();
-                mAdapter = new TrailerAdapter(myDataSet);
-                mRecyclerView.setAdapter(mAdapter);
-
-
-
             }
+            new FetchTrailers().execute();
+            // Trailers
+            mRecyclerView = (RecyclerView) rootView.findViewById(R.id.trailer_recycle_view);
+            mLayoutManager = new LinearLayoutManager(getActivity());
+            mRecyclerView.setHasFixedSize(true);
+            mRecyclerView.setLayoutManager(mLayoutManager);
+            mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+
+
+            mAdapter = new TrailerAdapter(myDataSet, getContext());
+            mRecyclerView.setAdapter(mAdapter);
             return rootView;
         }
 
@@ -156,6 +163,7 @@ public class DetailActivity extends AppCompatActivity {
                 item.setTrailer(trailerUrl);
 
 
+                Log.v(LOG_TAG, thumbNail);
                 myDataSet.add(item);
 
             }

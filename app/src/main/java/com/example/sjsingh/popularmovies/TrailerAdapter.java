@@ -17,16 +17,20 @@ import java.util.ArrayList;
 
 public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHolder> {
 
+    Context context;
     private ArrayList<TrailerItem> dataSet;
 
-    public TrailerAdapter(ArrayList<TrailerItem> data) {
+    public TrailerAdapter(ArrayList<TrailerItem> data, Context context) {
+
         this.dataSet = data;
+        this.context = context;
+
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent,
                                          int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
+        View view = LayoutInflater.from(context)
                 .inflate(R.layout.trailer_cardview_element, parent, false);
 
 
