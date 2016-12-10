@@ -39,10 +39,10 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHold
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, final int listPosition) {
+    public void onBindViewHolder(ViewHolder holder, int listPosition) {
 
 
-        TrailerItem item = new TrailerItem();
+        TrailerItem item = dataSet.get(listPosition);
         Context context = holder.imageViewIcon.getContext();
         Picasso.with(context)
                 .load(item.getImage())
