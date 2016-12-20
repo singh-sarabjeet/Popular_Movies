@@ -210,6 +210,7 @@ public class MainActivityFragment extends Fragment {
             item.setTrailer(TRAILER_BASE);
 
             mGridData.add(item);
+
             db.addMovie(item, TABLE_NAME);
 
         }

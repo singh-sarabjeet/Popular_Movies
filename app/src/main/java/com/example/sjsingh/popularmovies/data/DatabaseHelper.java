@@ -31,7 +31,7 @@ import static com.example.sjsingh.popularmovies.data.DatabaseContract.PopularMov
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
     public static final String DATABASE_NAME = "popularMoves.db";
 
     public DatabaseHelper(Context context) {
@@ -52,8 +52,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 PopularMovieData.COLUMN_POSTER + " TEXT NOT NULL, " +
                 PopularMovieData.COLUMN_BACKDROP + " TEXT NOT NULL, " +
 
-                PopularMovieData.COLUMN_TRAILER + "TEXT NOT NULL, " +
-                PopularMovieData.COLUMN_REVIEW + "TEXT NOT NULL " + ");";
+                PopularMovieData.COLUMN_TRAILER + " TEXT NOT NULL, " +
+                PopularMovieData.COLUMN_REVIEW + " TEXT NOT NULL " + ");";
 
 
         final String SQL_CREATE_TOP_MOVIE_TABLE = "CREATE TABLE IF NOT EXISTS " + TopMovieData.TABLE_NAME + " (" +
@@ -133,8 +133,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 item.setPlot(cursor.getString(4));
                 item.setImage(cursor.getString(5));
                 item.setBackdrop(cursor.getString(6));
-                item.setTrailer(cursor.getString(8));
-                item.setReview(cursor.getString(9));
+                item.setTrailer(cursor.getString(7));
+                item.setReview(cursor.getString(8));
                 // Adding contact to list
                 movieList.add(item);
             } while (cursor.moveToNext());
