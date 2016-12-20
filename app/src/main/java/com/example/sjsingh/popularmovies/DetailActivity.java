@@ -55,6 +55,8 @@ public class DetailActivity extends AppCompatActivity {
 
         private static ArrayList<TrailerItem> myDataSet
                 = new ArrayList<TrailerItem>();
+        private static ArrayList<ReviewItem> reviewData
+                = new ArrayList<ReviewItem>();
         String title;
         String rating;
         String r_date;
@@ -64,9 +66,14 @@ public class DetailActivity extends AppCompatActivity {
         String trailer;
         ImageView poster_image;
         ImageView backdrop_image;
+        String review;
         private RecyclerView mRecyclerView;
         private RecyclerView.Adapter mAdapter;
         private RecyclerView.LayoutManager mLayoutManager;
+
+        private RecyclerView rRecyclerView;
+        private RecyclerView.Adapter rAdapter;
+        private RecyclerView.LayoutManager rLayoutManager;
 
 
         public DetailFragment() {
@@ -92,8 +99,9 @@ public class DetailActivity extends AppCompatActivity {
                 plot = intent.getStringExtra(getString(R.string.plot_key));
                 poster = intent.getStringExtra(getString(R.string.poster_key));
                 backdrop = intent.getStringExtra(getString(R.string.backdrop_key));
+                review = intent.getStringExtra(getString(R.string.reviews));
 
-                trailer = intent.getStringExtra("Trailer");
+                trailer = intent.getStringExtra(getString(R.string.trailers));
 
 
                 r_date = "Released:" + r_date;
@@ -121,21 +129,40 @@ public class DetailActivity extends AppCompatActivity {
                         .into(backdrop_image);
 
             }
-            new FetchTrailers().execute();
-            // Trailers
+            myDataSet.clear();
+            reviewData.clear();
+            // New request for fetching the trailer data
+            new FetchReviews(review).execute();
+            new FetchTrailers(trailer).execute();
+
             mRecyclerView = (RecyclerView) rootView.findViewById(R.id.trailer_recycle_view);
-            mLayoutManager = new LinearLayoutManager(getActivity());
+            mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
             mRecyclerView.setHasFixedSize(true);
             mRecyclerView.setLayoutManager(mLayoutManager);
             mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
 
             mAdapter = new TrailerAdapter(myDataSet, getContext());
+
+
+            //New request for fetching the review data
+
+            rRecyclerView = (RecyclerView) rootView.findViewById(R.id.review_recycle_view);
+            rLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+            rRecyclerView.setHasFixedSize(true);
+            rRecyclerView.setLayoutManager(rLayoutManager);
+            rRecyclerView.setItemAnimator(new DefaultItemAnimator());
+
+
+            rAdapter = new ReviewAdapter(reviewData, getContext());
+
             mRecyclerView.setAdapter(mAdapter);
+            rRecyclerView.setAdapter(rAdapter);
+
             return rootView;
         }
 
-        private ArrayList<TrailerItem> formatDataFromJson(String movieJsonStr) throws JSONException {
+        private ArrayList<TrailerItem> formatTrailerDataFromJson(String movieJsonStr) throws JSONException {
 
             final String MOVIE_RESULTS = "results";
             final String KEY = "key";
@@ -172,22 +199,58 @@ public class DetailActivity extends AppCompatActivity {
 
         }
 
-        public class FetchTrailers extends AsyncTask<Void, Void, ArrayList<TrailerItem>> {
+        private ArrayList<ReviewItem> formatReviewDataFromJson(String movieJsonStr) throws JSONException {
+
+            final String MOVIE_RESULTS = "results";
+            final String AUTHOR = "author";
+            final String CONTENT = "content";
+
+
+            JSONObject movieJson = new JSONObject(movieJsonStr);
+            JSONArray movieArray = movieJson.getJSONArray(MOVIE_RESULTS);
+
+
+            ReviewItem item;
+
+            for (int i = 0; i < movieArray.length(); i++) {
+                JSONObject movieResultObj = movieArray.getJSONObject(i);
+
+
+                String author = movieResultObj.getString(AUTHOR);
+                String content = movieResultObj.getString(CONTENT);
+
+
+                item = new ReviewItem();
+
+                item.setAuthor(author);
+                item.setReview(content);
+
+
+                reviewData.add(item);
+
+            }
+
+            return reviewData;
+
+        }
+
+        public class FetchReviews extends AsyncTask<Void, Void, ArrayList<ReviewItem>> {
+
+
+            HttpURLConnection urlConnection = null;
+            BufferedReader reader = null;
+            String movieJSONStr = null;
+            String BASE_URL;
+
+            public FetchReviews(String searchUrl) {
+                BASE_URL = searchUrl;
+            }
 
 
             @Override
-            protected ArrayList<TrailerItem> doInBackground(Void... params) {
-
-
-                HttpURLConnection urlConnection = null;
-                BufferedReader reader = null;
-                String movieJSONStr = null;
-                String BASE_URL;
-
+            protected ArrayList<ReviewItem> doInBackground(Void... params) {
 
                 try {
-
-                    BASE_URL = trailer;
 
                     final String API_KEY = "api_key";
 
@@ -237,14 +300,96 @@ public class DetailActivity extends AppCompatActivity {
                         }
                     }
                 }
-
                 try {
-                    ArrayList<TrailerItem> results = formatDataFromJson(movieJSONStr);
+
+                    ArrayList<ReviewItem> results = formatReviewDataFromJson(movieJSONStr);
                     return results;
                 } catch (JSONException e) {
                     Log.e(LOG_TAG, e.getMessage(), e);
                     e.printStackTrace();
                 }
+
+
+                return null;
+            }
+
+        }
+
+        public class FetchTrailers extends AsyncTask<Void, Void, ArrayList<TrailerItem>> {
+
+
+            HttpURLConnection urlConnection = null;
+            BufferedReader reader = null;
+            String movieJSONStr = null;
+            String BASE_URL;
+
+            public FetchTrailers(String searchUrl) {
+                BASE_URL = searchUrl;
+            }
+
+            @Override
+            protected ArrayList<TrailerItem> doInBackground(Void... params) {
+
+                try {
+
+                    final String API_KEY = "api_key";
+
+                    Uri builtUri = Uri.parse(BASE_URL).buildUpon()
+                            .appendQueryParameter(API_KEY, BuildConfig.MY_MOVIE_DB_API_KEY).build();
+
+
+                    URL url = new URL(builtUri.toString());
+
+                    Log.d(LOG_TAG, url.toString());
+
+                    urlConnection = (HttpURLConnection) url.openConnection();
+                    urlConnection.setRequestMethod("GET");
+                    urlConnection.connect();
+
+                    InputStream inputStream = urlConnection.getInputStream();
+                    StringBuffer buffer = new StringBuffer();
+                    if (inputStream == null) {
+
+                        return null;
+                    }
+                    reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        buffer.append(line).append("\n");
+                    }
+
+                    if (buffer.length() == 0) {
+                        Log.v(LOG_TAG, "Buffer Length is null");
+                        return null;
+                    }
+                    movieJSONStr = buffer.toString();
+
+                } catch (IOException e) {
+                    Log.e(LOG_TAG, "Error", e);
+                    return null;
+                } finally {
+                    if (urlConnection != null) {
+                        urlConnection.disconnect();
+                    }
+                    if (reader != null) {
+                        try {
+                            reader.close();
+                        } catch (final IOException e) {
+                            Log.e(LOG_TAG, "Error Closing Stream", e);
+                        }
+                    }
+                }
+                try {
+
+                    ArrayList<TrailerItem> results = formatTrailerDataFromJson(movieJSONStr);
+                    return results;
+                } catch (JSONException e) {
+                    Log.e(LOG_TAG, e.getMessage(), e);
+                    e.printStackTrace();
+                }
+
+
                 return null;
             }
 

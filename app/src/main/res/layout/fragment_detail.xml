@@ -118,7 +118,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/standard_margin"
             android:orientation="horizontal"
-            android:scrollbars="horizontal" />
+            android:scrollbars="none" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -138,9 +138,8 @@
             android:id="@+id/review_recycle_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
             android:orientation="horizontal"
-            android:scrollbars="horizontal" />
+            android:scrollbars="none" />
 
     </LinearLayout>
 </ScrollView>

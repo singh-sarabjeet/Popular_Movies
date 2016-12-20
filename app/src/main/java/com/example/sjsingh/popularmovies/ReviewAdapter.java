@@ -5,23 +5,17 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-
-import com.squareup.picasso.Picasso;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
-/**
- * Created by Sarabjeet Singh on 04-12-2016.
- */
 
-public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHolder> {
+public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder> {
 
     Context context;
-    Database creation
-    private ArrayList<TrailerItem> dataSet;
+    private ArrayList<ReviewItem> dataSet;
 
-    public TrailerAdapter(ArrayList<TrailerItem> data, Context context) {
+    public ReviewAdapter(ArrayList<ReviewItem> data, Context context) {
 
         this.dataSet = data;
         this.context = context;
@@ -32,7 +26,7 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHold
     public ViewHolder onCreateViewHolder(ViewGroup parent,
                                          int viewType) {
         View view = LayoutInflater.from(context)
-                .inflate(R.layout.trailer_cardview_element, parent, false);
+                .inflate(R.layout.review_cardview_element, parent, false);
 
 
         ViewHolder myViewHolder = new ViewHolder(view);
@@ -43,11 +37,9 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHold
     public void onBindViewHolder(ViewHolder holder, int listPosition) {
 
 
-        TrailerItem item = dataSet.get(listPosition);
-        Context context = holder.imageViewIcon.getContext();
-        Picasso.with(context)
-                .load(item.getImage())
-                .into(holder.imageViewIcon);
+        ReviewItem item = dataSet.get(listPosition);
+        holder.author.setText(item.getAuthor());
+        holder.review.setText(item.getReview());
 
     }
 
@@ -56,17 +48,15 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHold
         return dataSet.size();
     }
 
-    <<<<<<<HEAD
-    =======
-
-            >>>>>>>
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        public ImageView imageViewIcon;
+        public TextView author;
+        public TextView review;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            this.imageViewIcon = (ImageView) itemView.findViewById(R.id.trailer_thumbnail);
+            this.author = (TextView) itemView.findViewById(R.id.reviewer_name_textView);
+            this.review = (TextView) itemView.findViewById(R.id.review_textView);
         }
     }
 }

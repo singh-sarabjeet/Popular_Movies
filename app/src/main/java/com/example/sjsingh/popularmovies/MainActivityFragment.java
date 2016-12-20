@@ -23,6 +23,9 @@ import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.example.sjsingh.popularmovies.data.DatabaseContract;
+import com.example.sjsingh.popularmovies.data.DatabaseHelper;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -42,11 +45,12 @@ public class MainActivityFragment extends Fragment {
 
     static final int SORT_ORDER_REPLY = 1;
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
+    DatabaseHelper db;
     private GridView mGridView;
     private ProgressBar mProgressBar;
     private ImageListAdapter mGridAdapter;
     private ArrayList<GridItem> mGridData;
-
+    private String TABLE_NAME;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -95,7 +99,10 @@ public class MainActivityFragment extends Fragment {
         mGridView = (GridView) rootView.findViewById(R.id.gridview_poster);
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
 
+        db = new DatabaseHelper(getActivity());
+
         mGridData = new ArrayList<>();
+        mGridData = db.getAllMovies();
         mGridAdapter = new ImageListAdapter(getActivity(), mGridData);
         mGridView.setAdapter(mGridAdapter);
 
@@ -110,7 +117,8 @@ public class MainActivityFragment extends Fragment {
                 intent.putExtra(getString(R.string.release_date_key), item.getReleaseDate());
                 intent.putExtra(getString(R.string.poster_key), item.getImage());
                 intent.putExtra(getString(R.string.backdrop_key), item.getBackdrop());
-                intent.putExtra("Trailer", item.getTrailer());
+                intent.putExtra(getString(R.string.trailers), item.getTrailer());
+                intent.putExtra(getString(R.string.reviews), item.getReview());
                 startActivity(intent);
             }
         });
@@ -187,11 +195,13 @@ public class MainActivityFragment extends Fragment {
             String POSTER_URL = POSTER_BASE_URL + poster_path;
             String BACKDROP_URL = BACKDROP_BASE_URL + backdrop_path;
             String TRAILER_BASE = TRAILER_BASE_URL + id + "/videos?";
+            String REVIEW_BASE = TRAILER_BASE_URL + id + "/reviews?";
 
 
             item = new GridItem();
 
             item.setTitle(title);
+            item.setReview(REVIEW_BASE);
             item.setImage(POSTER_URL);
             item.setPlot(synopsis);
             item.setRating(rating);
@@ -200,6 +210,7 @@ public class MainActivityFragment extends Fragment {
             item.setTrailer(TRAILER_BASE);
 
             mGridData.add(item);
+            db.addMovie(item, TABLE_NAME);
 
         }
 
@@ -230,10 +241,13 @@ public class MainActivityFragment extends Fragment {
 
 
                 if (orderType.equals(getString(R.string.pref_top_rated))) {
+                    TABLE_NAME = DatabaseContract.TopMovieData.TABLE_NAME;
                     BASE_URL = "http://api.themoviedb.org/3/movie/top_rated?";
                 } else {
+                    TABLE_NAME = DatabaseContract.PopularMovieData.TABLE_NAME;
                     BASE_URL = "http://api.themoviedb.org/3/movie/popular?";
                 }
+
 
                 final String API_KEY = "api_key";
 
@@ -297,12 +311,12 @@ public class MainActivityFragment extends Fragment {
         @Override
         protected void onPostExecute(ArrayList<GridItem> result) {
 
-            if (result != null) {
+            if (result != null)
                 mGridAdapter.setGridData(result);
                 mProgressBar.setVisibility(View.GONE);
             }
         }
     }
 
-}
+
 

@@ -11,6 +11,7 @@ public class GridItem {
     private String releaseDate;
     private String backdrop;
     private String trailer;
+    private String review;
 
     public GridItem() {
         super();
@@ -70,6 +71,14 @@ public class GridItem {
 
     public void setTrailer(String trailer) {
         this.trailer = trailer;
+    }
+
+    public String getReview() {
+        return review;
+    }
+
+    public void setReview(String review) {
+        this.review = review;
     }
 
 
