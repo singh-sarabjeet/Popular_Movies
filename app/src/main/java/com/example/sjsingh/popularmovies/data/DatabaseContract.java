@@ -18,7 +18,7 @@ public class DatabaseContract {
         public static final String COLUMN_POSTER = "poster";
         public static final String COLUMN_BACKDROP = "backdrop";
         public static final String COLUMN_TRAILER = "trailer";
-        //   public static final String COLUMN_REVIEW = "review";
+        public static final String COLUMN_REVIEW = "review";
     }
 
     public static final class TopMovieData implements BaseColumns {

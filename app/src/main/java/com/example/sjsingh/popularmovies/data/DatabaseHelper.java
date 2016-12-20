@@ -20,6 +20,8 @@ import static com.example.sjsingh.popularmovies.data.DatabaseContract.PopularMov
 import static com.example.sjsingh.popularmovies.data.DatabaseContract.PopularMovieData.COLUMN_POSTER;
 import static com.example.sjsingh.popularmovies.data.DatabaseContract.PopularMovieData.COLUMN_RATING;
 import static com.example.sjsingh.popularmovies.data.DatabaseContract.PopularMovieData.COLUMN_RELEASE_DATE;
+import static com.example.sjsingh.popularmovies.data.DatabaseContract.PopularMovieData.COLUMN_REVIEW;
+import static com.example.sjsingh.popularmovies.data.DatabaseContract.PopularMovieData.COLUMN_TRAILER;
 
 // import static com.example.sjsingh.popularmovies.data.DatabaseContract.PopularMovieData.COLUMN_REVIEW;
 
@@ -29,8 +31,8 @@ import static com.example.sjsingh.popularmovies.data.DatabaseContract.PopularMov
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 3;
-    public static final String DATABASE_NAME = "movieData.db";
+    public static final int DATABASE_VERSION = 1;
+    public static final String DATABASE_NAME = "popularMoves.db";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -48,10 +50,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 PopularMovieData.COLUMN_PLOT + " TEXT NOT NULL, " +
 
                 PopularMovieData.COLUMN_POSTER + " TEXT NOT NULL, " +
-                PopularMovieData.COLUMN_BACKDROP + " TEXT NOT NULL " +
+                PopularMovieData.COLUMN_BACKDROP + " TEXT NOT NULL, " +
 
-                // PopularMovieData.COLUMN_TRAILER + "TEXT NOT NULL " +
-            /*    PopularMovieData.COLUMN_REVIEW + "TEXT " + */ ");";
+                PopularMovieData.COLUMN_TRAILER + "TEXT NOT NULL, " +
+                PopularMovieData.COLUMN_REVIEW + "TEXT NOT NULL " + ");";
 
 
         final String SQL_CREATE_TOP_MOVIE_TABLE = "CREATE TABLE IF NOT EXISTS " + TopMovieData.TABLE_NAME + " (" +
@@ -103,8 +105,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_PLOT, item.getPlot());
         values.put(COLUMN_RATING, item.getRating());
         values.put(COLUMN_RELEASE_DATE, item.getReleaseDate());
-        //   values.put(COLUMN_TRAILER, item.getTrailer());
-        // values.put(COLUMN_REVIEW, item.getReview());
+        values.put(COLUMN_TRAILER, item.getTrailer());
+        values.put(COLUMN_REVIEW, item.getReview());
 
         Log.v("SQL LOG", "DATA INSERTED");
         db.insert(tableName, null, values);
@@ -125,14 +127,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             do {
                 GridItem item = new GridItem();
 
-                item.setTitle(cursor.getString(2));
-                item.setReleaseDate(cursor.getString(3));
-                item.setRating(cursor.getString(4));
-                item.setPlot(cursor.getString(5));
-                item.setImage(cursor.getString(6));
-                item.setBackdrop(cursor.getString(7));
-                //         item.setTrailer(cursor.getString(8));
-                //       item.setReview(cursor.getString(9));
+                item.setTitle(cursor.getString(1));
+                item.setReleaseDate(cursor.getString(2));
+                item.setRating(cursor.getString(3));
+                item.setPlot(cursor.getString(4));
+                item.setImage(cursor.getString(5));
+                item.setBackdrop(cursor.getString(6));
+                item.setTrailer(cursor.getString(8));
+                item.setReview(cursor.getString(9));
                 // Adding contact to list
                 movieList.add(item);
             } while (cursor.moveToNext());
