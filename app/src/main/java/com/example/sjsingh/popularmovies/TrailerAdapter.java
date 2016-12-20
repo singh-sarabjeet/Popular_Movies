@@ -18,7 +18,6 @@ import java.util.ArrayList;
 public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHolder> {
 
     Context context;
-    Database creation
     private ArrayList<TrailerItem> dataSet;
 
     public TrailerAdapter(ArrayList<TrailerItem> data, Context context) {
@@ -56,10 +55,7 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHold
         return dataSet.size();
     }
 
-    <<<<<<<HEAD
-    =======
-
-            >>>>>>>
+ 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         public ImageView imageViewIcon;
