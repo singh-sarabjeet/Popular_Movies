@@ -23,7 +23,6 @@ import static com.example.sjsingh.popularmovies.data.DatabaseContract.PopularMov
 import static com.example.sjsingh.popularmovies.data.DatabaseContract.PopularMovieData.COLUMN_REVIEW;
 import static com.example.sjsingh.popularmovies.data.DatabaseContract.PopularMovieData.COLUMN_TRAILER;
 
-// import static com.example.sjsingh.popularmovies.data.DatabaseContract.PopularMovieData.COLUMN_REVIEW;
 
 /**
  * Created by Sarabjeet Singh on 14-12-2016.
@@ -31,7 +30,7 @@ import static com.example.sjsingh.popularmovies.data.DatabaseContract.PopularMov
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 2;
+    public static final int DATABASE_VERSION = 3;
     public static final String DATABASE_NAME = "popularMoves.db";
 
     public DatabaseHelper(Context context) {
@@ -67,7 +66,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 TopMovieData.COLUMN_PLOT + " TEXT NOT NULL, " +
 
                 TopMovieData.COLUMN_POSTER + " TEXT NOT NULL, " +
-                TopMovieData.COLUMN_BACKDROP + " TEXT NOT NULL " + ");";
+                TopMovieData.COLUMN_BACKDROP + " TEXT NOT NULL, " +
+
+                TopMovieData.COLUMN_TRAILER + " TEXT NOT NULL, " +
+                TopMovieData.COLUMN_REVIEW + " TEXT NOT NULL " + ");";
 
         final String SQL_CREATE_FAVORITE_MOVIE_TABLE = "CREATE TABLE IF NOT EXISTS " + FavoriteData.TABLE_NAME + " (" +
 
@@ -80,7 +82,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 FavoriteData.COLUMN_PLOT + " TEXT NOT NULL, " +
 
                 FavoriteData.COLUMN_POSTER + " TEXT NOT NULL, " +
-                FavoriteData.COLUMN_BACKDROP + " TEXT NOT NULL " + ");";
+                FavoriteData.COLUMN_BACKDROP + " TEXT NOT NULL, " +
+
+                FavoriteData.COLUMN_TRAILER + " TEXT NOT NULL, " +
+                FavoriteData.COLUMN_REVIEW + " TEXT NOT NULL " + ");";
 
         sqLiteDatabase.execSQL(SQL_CREATE_POPULAR_MOVIE_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_TOP_MOVIE_TABLE);
@@ -114,10 +119,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public ArrayList<GridItem> getAllMovies() {
+    public void deleteEntries(String tableName) {
+
+        SQLiteDatabase wDb = this.getWritableDatabase();
+        wDb.execSQL("DELETE FROM " + tableName);
+    }
+
+    public ArrayList<GridItem> getAllMovies(String Table_name) {
         ArrayList<GridItem> movieList = new ArrayList<GridItem>();
         // Select All Query
-        String selectQuery = "SELECT  * FROM " + PopularMovieData.TABLE_NAME;
+        String selectQuery = "SELECT * FROM " + Table_name;
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);

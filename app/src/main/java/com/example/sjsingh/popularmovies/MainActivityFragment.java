@@ -46,6 +46,7 @@ public class MainActivityFragment extends Fragment {
     static final int SORT_ORDER_REPLY = 1;
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
     DatabaseHelper db;
+    String BASE_URL;
     private GridView mGridView;
     private ProgressBar mProgressBar;
     private ImageListAdapter mGridAdapter;
@@ -56,6 +57,7 @@ public class MainActivityFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
     }
 
     @Override
@@ -102,7 +104,8 @@ public class MainActivityFragment extends Fragment {
         db = new DatabaseHelper(getActivity());
 
         mGridData = new ArrayList<>();
-        mGridData = db.getAllMovies();
+        checkSharedPreferences();
+        mGridData = db.getAllMovies(TABLE_NAME);
         mGridAdapter = new ImageListAdapter(getActivity(), mGridData);
         mGridView.setAdapter(mGridAdapter);
 
@@ -127,7 +130,6 @@ public class MainActivityFragment extends Fragment {
         return rootView;
 
     }
-
 
     public void updateData() {
 
@@ -176,7 +178,7 @@ public class MainActivityFragment extends Fragment {
         JSONObject movieJson = new JSONObject(movieJsonStr);
         JSONArray movieArray = movieJson.getJSONArray(MOVIE_RESULTS);
 
-
+        db.deleteEntries(TABLE_NAME);
         GridItem item;
 
         for (int i = 0; i < movieArray.length(); i++) {
@@ -211,12 +213,30 @@ public class MainActivityFragment extends Fragment {
 
             mGridData.add(item);
 
+
             db.addMovie(item, TABLE_NAME);
 
         }
 
         return mGridData;
 
+    }
+
+    public void checkSharedPreferences() {
+        SharedPreferences sharedPrefs =
+                PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String orderType = sharedPrefs.getString(
+                getString(R.string.pref_order_key),
+                getString(R.string.pref_most_popular));
+
+
+        if (orderType.equals(getString(R.string.pref_top_rated))) {
+            TABLE_NAME = DatabaseContract.TopMovieData.TABLE_NAME;
+            BASE_URL = "http://api.themoviedb.org/3/movie/top_rated?";
+        } else {
+            TABLE_NAME = DatabaseContract.PopularMovieData.TABLE_NAME;
+            BASE_URL = "http://api.themoviedb.org/3/movie/popular?";
+        }
     }
 
     public class FetchMovie extends AsyncTask<Void, Void, ArrayList<GridItem>> {
@@ -229,25 +249,11 @@ public class MainActivityFragment extends Fragment {
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
             String movieJSONStr = null;
-            String BASE_URL;
 
 
             try {
 
-                SharedPreferences sharedPrefs =
-                        PreferenceManager.getDefaultSharedPreferences(getActivity());
-                String orderType = sharedPrefs.getString(
-                        getString(R.string.pref_order_key),
-                        getString(R.string.pref_most_popular));
-
-
-                if (orderType.equals(getString(R.string.pref_top_rated))) {
-                    TABLE_NAME = DatabaseContract.TopMovieData.TABLE_NAME;
-                    BASE_URL = "http://api.themoviedb.org/3/movie/top_rated?";
-                } else {
-                    TABLE_NAME = DatabaseContract.PopularMovieData.TABLE_NAME;
-                    BASE_URL = "http://api.themoviedb.org/3/movie/popular?";
-                }
+                checkSharedPreferences();
 
 
                 final String API_KEY = "api_key";
