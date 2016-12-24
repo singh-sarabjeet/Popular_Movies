@@ -17,6 +17,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.sjsingh.popularmovies.data.DatabaseContract;
+import com.example.sjsingh.popularmovies.data.DatabaseHelper;
+import com.like.LikeButton;
+import com.like.OnLikeListener;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -64,11 +68,12 @@ public class DetailActivity extends AppCompatActivity {
         String poster;
         String backdrop;
         String trailer;
+        String id;
         ImageView poster_image;
         ImageView backdrop_image;
         String review;
         private RecyclerView mRecyclerView;
-        private RecyclerView.Adapter mAdapter;
+        private TrailerAdapter mAdapter;
         private RecyclerView.LayoutManager mLayoutManager;
 
         private RecyclerView rRecyclerView;
@@ -100,19 +105,19 @@ public class DetailActivity extends AppCompatActivity {
                 poster = intent.getStringExtra(getString(R.string.poster_key));
                 backdrop = intent.getStringExtra(getString(R.string.backdrop_key));
                 review = intent.getStringExtra(getString(R.string.reviews));
-
                 trailer = intent.getStringExtra(getString(R.string.trailers));
+                id = intent.getStringExtra("Id");
 
 
-                r_date = "Released:" + r_date;
-                rating = rating + "/10";
+                String rDateFinal = "Released:" + r_date;
+                String ratingFinal = rating + "/10";
 
                 ((TextView) rootView.findViewById(R.id.original_title_textview))
                         .setText(title);
                 ((TextView) rootView.findViewById(R.id.user_rating_textview))
-                        .setText(rating);
+                        .setText(ratingFinal);
                 ((TextView) rootView.findViewById(R.id.release_date_textview))
-                        .setText(r_date);
+                        .setText(rDateFinal);
                 ((TextView) rootView.findViewById(R.id.plot_textview))
                         .setText(plot);
 
@@ -129,6 +134,39 @@ public class DetailActivity extends AppCompatActivity {
                         .into(backdrop_image);
 
             }
+
+            LikeButton likeButton = (LikeButton) rootView.findViewById(R.id.like_button);
+            DatabaseHelper dbh = new DatabaseHelper(getActivity());
+            if (dbh.isExist(id)) {
+                likeButton.setLiked(true);
+            }
+            likeButton.setOnLikeListener(new OnLikeListener() {
+                @Override
+                public void liked(LikeButton likeButton) {
+                    DatabaseHelper db = new DatabaseHelper(getActivity());
+                    if (!(db.isExist(title))) {
+                        GridItem item = new GridItem();
+                        item.setTitle(title);
+                        item.setReview(review);
+                        item.setImage(poster);
+                        item.setPlot(plot);
+                        item.setRating(rating);
+                        item.setReleaseDate(r_date);
+                        item.setBackdrop(backdrop);
+                        item.setTrailer(trailer);
+                        item.setId(id);
+                        db.addMovie(item, DatabaseContract.FavoriteData.TABLE_NAME);
+
+                    }
+                }
+
+                @Override
+                public void unLiked(LikeButton likeButton) {
+                    DatabaseHelper db = new DatabaseHelper(getActivity());
+                    db.deleteEntry(id);
+
+                }
+            });
             myDataSet.clear();
             reviewData.clear();
             // New request for fetching the trailer data
@@ -158,6 +196,15 @@ public class DetailActivity extends AppCompatActivity {
 
             mRecyclerView.setAdapter(mAdapter);
             rRecyclerView.setAdapter(rAdapter);
+
+            mAdapter.setOnItemClickListener(new TrailerAdapter.ClickListener() {
+                @Override
+                public void onItemClick(int position, View v) {
+                    TrailerItem item = myDataSet.get(position);
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(item.getTrailer()));
+                    startActivity(intent);
+                }
+            });
 
             return rootView;
         }

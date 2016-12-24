@@ -12,6 +12,7 @@ public class GridItem {
     private String backdrop;
     private String trailer;
     private String review;
+    private String id;
 
     public GridItem() {
         super();
@@ -82,4 +83,11 @@ public class GridItem {
     }
 
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 }

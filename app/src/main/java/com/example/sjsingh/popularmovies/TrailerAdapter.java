@@ -17,8 +17,8 @@ import java.util.ArrayList;
 
 public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHolder> {
 
+    private static ClickListener clickListener;
     Context context;
-
     private ArrayList<TrailerItem> dataSet;
 
     public TrailerAdapter(ArrayList<TrailerItem> data, Context context) {
@@ -49,6 +49,7 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHold
                 .load(item.getImage())
                 .into(holder.imageViewIcon);
 
+
     }
 
     @Override
@@ -56,13 +57,30 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHold
         return dataSet.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public void setOnItemClickListener(ClickListener clickListener) {
+        TrailerAdapter.clickListener = clickListener;
+    }
+
+    public interface ClickListener {
+        void onItemClick(int position, View v);
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public ImageView imageViewIcon;
 
         public ViewHolder(View itemView) {
             super(itemView);
+            itemView.setOnClickListener(this);
             this.imageViewIcon = (ImageView) itemView.findViewById(R.id.trailer_thumbnail);
         }
+
+        @Override
+        public void onClick(View v) {
+            clickListener.onItemClick(getAdapterPosition(), v);
+        }
+
+
     }
 }
+

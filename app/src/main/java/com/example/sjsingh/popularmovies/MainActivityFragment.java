@@ -82,8 +82,8 @@ public class MainActivityFragment extends Fragment {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultcode, Intent data) {
-        super.onActivityResult(requestCode, resultcode, data);
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == SORT_ORDER_REPLY) {
 
@@ -122,9 +122,11 @@ public class MainActivityFragment extends Fragment {
                 intent.putExtra(getString(R.string.backdrop_key), item.getBackdrop());
                 intent.putExtra(getString(R.string.trailers), item.getTrailer());
                 intent.putExtra(getString(R.string.reviews), item.getReview());
+                intent.putExtra("Id", item.getId());
                 startActivity(intent);
             }
         });
+
 
         updateData();
         return rootView;
@@ -134,12 +136,18 @@ public class MainActivityFragment extends Fragment {
     public void updateData() {
 
         if (!haveNetworkConnection()) {
+            checkSharedPreferences();
+            mGridData = db.getAllMovies(TABLE_NAME);
+            mGridAdapter.setGridData(mGridData);
             mProgressBar.setVisibility(View.GONE);
+
             Toast.makeText(getActivity(), "No Internet Connection", Toast.LENGTH_SHORT).show();
         } else {
             mGridAdapter.clear();
+            Toast.makeText(getActivity(), "Downloading Data", Toast.LENGTH_SHORT).show();
             new FetchMovie().execute();
             mProgressBar.setVisibility(View.VISIBLE);
+
         }
     }
 
@@ -210,6 +218,7 @@ public class MainActivityFragment extends Fragment {
             item.setReleaseDate(release_date);
             item.setBackdrop(BACKDROP_URL);
             item.setTrailer(TRAILER_BASE);
+            item.setId(id);
 
             mGridData.add(item);
 
@@ -233,9 +242,11 @@ public class MainActivityFragment extends Fragment {
         if (orderType.equals(getString(R.string.pref_top_rated))) {
             TABLE_NAME = DatabaseContract.TopMovieData.TABLE_NAME;
             BASE_URL = "http://api.themoviedb.org/3/movie/top_rated?";
-        } else {
+        } else if (orderType.equals(getString(R.string.pref_most_popular))) {
             TABLE_NAME = DatabaseContract.PopularMovieData.TABLE_NAME;
             BASE_URL = "http://api.themoviedb.org/3/movie/popular?";
+        } else {
+            TABLE_NAME = DatabaseContract.FavoriteData.TABLE_NAME;
         }
     }
 
@@ -320,10 +331,10 @@ public class MainActivityFragment extends Fragment {
 
             if (result != null)
                 mGridAdapter.setGridData(result);
-                mProgressBar.setVisibility(View.GONE);
-            }
+            mProgressBar.setVisibility(View.GONE);
         }
     }
+}
 
 
 

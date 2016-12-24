@@ -19,6 +19,7 @@ public class DatabaseContract {
         public static final String COLUMN_BACKDROP = "backdrop";
         public static final String COLUMN_TRAILER = "trailer";
         public static final String COLUMN_REVIEW = "review";
+        public static final String COLUMN_ID = "id";
     }
 
     public static final class TopMovieData implements BaseColumns {
@@ -32,6 +33,7 @@ public class DatabaseContract {
         public static final String COLUMN_BACKDROP = "backdrop";
         public static final String COLUMN_TRAILER = "trailer";
         public static final String COLUMN_REVIEW = "review";
+        public static final String COLUMN_ID = "id";
     }
 
     public static final class FavoriteData implements BaseColumns {
@@ -45,5 +47,6 @@ public class DatabaseContract {
         public static final String COLUMN_BACKDROP = "backdrop";
         public static final String COLUMN_TRAILER = "trailer";
         public static final String COLUMN_REVIEW = "review";
+        public static final String COLUMN_ID = "id";
     }
 }

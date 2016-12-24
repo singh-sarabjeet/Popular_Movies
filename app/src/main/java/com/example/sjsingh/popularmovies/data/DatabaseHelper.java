@@ -15,6 +15,7 @@ import com.example.sjsingh.popularmovies.data.DatabaseContract.TopMovieData;
 import java.util.ArrayList;
 
 import static com.example.sjsingh.popularmovies.data.DatabaseContract.PopularMovieData.COLUMN_BACKDROP;
+import static com.example.sjsingh.popularmovies.data.DatabaseContract.PopularMovieData.COLUMN_ID;
 import static com.example.sjsingh.popularmovies.data.DatabaseContract.PopularMovieData.COLUMN_MOVIE_TITLE;
 import static com.example.sjsingh.popularmovies.data.DatabaseContract.PopularMovieData.COLUMN_PLOT;
 import static com.example.sjsingh.popularmovies.data.DatabaseContract.PopularMovieData.COLUMN_POSTER;
@@ -30,7 +31,7 @@ import static com.example.sjsingh.popularmovies.data.DatabaseContract.PopularMov
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 3;
+    public static final int DATABASE_VERSION = 5;
     public static final String DATABASE_NAME = "popularMoves.db";
 
     public DatabaseHelper(Context context) {
@@ -52,7 +53,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 PopularMovieData.COLUMN_BACKDROP + " TEXT NOT NULL, " +
 
                 PopularMovieData.COLUMN_TRAILER + " TEXT NOT NULL, " +
-                PopularMovieData.COLUMN_REVIEW + " TEXT NOT NULL " + ");";
+                PopularMovieData.COLUMN_REVIEW + " TEXT NOT NULL, " +
+                PopularMovieData.COLUMN_ID + " TEXT NOT NULL" + ");";
 
 
         final String SQL_CREATE_TOP_MOVIE_TABLE = "CREATE TABLE IF NOT EXISTS " + TopMovieData.TABLE_NAME + " (" +
@@ -69,7 +71,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 TopMovieData.COLUMN_BACKDROP + " TEXT NOT NULL, " +
 
                 TopMovieData.COLUMN_TRAILER + " TEXT NOT NULL, " +
-                TopMovieData.COLUMN_REVIEW + " TEXT NOT NULL " + ");";
+                TopMovieData.COLUMN_REVIEW + " TEXT NOT NULL, " +
+                TopMovieData.COLUMN_ID + " TEXT NOT NULL" + ");";
 
         final String SQL_CREATE_FAVORITE_MOVIE_TABLE = "CREATE TABLE IF NOT EXISTS " + FavoriteData.TABLE_NAME + " (" +
 
@@ -85,7 +88,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 FavoriteData.COLUMN_BACKDROP + " TEXT NOT NULL, " +
 
                 FavoriteData.COLUMN_TRAILER + " TEXT NOT NULL, " +
-                FavoriteData.COLUMN_REVIEW + " TEXT NOT NULL " + ");";
+                FavoriteData.COLUMN_REVIEW + " TEXT NOT NULL, " +
+                PopularMovieData.COLUMN_ID + " TEXT NOT NULL" + ");";
 
         sqLiteDatabase.execSQL(SQL_CREATE_POPULAR_MOVIE_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_TOP_MOVIE_TABLE);
@@ -97,6 +101,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + PopularMovieData.TABLE_NAME);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TopMovieData.TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + FavoriteData.TABLE_NAME);
         onCreate(sqLiteDatabase);
     }
 
@@ -112,11 +117,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_RELEASE_DATE, item.getReleaseDate());
         values.put(COLUMN_TRAILER, item.getTrailer());
         values.put(COLUMN_REVIEW, item.getReview());
+        values.put(COLUMN_ID, item.getId());
 
         Log.v("SQL LOG", "DATA INSERTED");
         db.insert(tableName, null, values);
         db.close();
 
+    }
+
+    public void deleteEntry(String ID) {
+        SQLiteDatabase wDb = this.getWritableDatabase();
+        wDb.execSQL("DELETE FROM " + FavoriteData.TABLE_NAME + " WHERE id = " + ID);
     }
 
     public void deleteEntries(String tableName) {
@@ -146,12 +157,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 item.setBackdrop(cursor.getString(6));
                 item.setTrailer(cursor.getString(7));
                 item.setReview(cursor.getString(8));
+                item.setId(cursor.getString(9));
                 // Adding contact to list
                 movieList.add(item);
             } while (cursor.moveToNext());
         }
 
         return movieList;
+    }
+
+    public boolean isExist(String ID) {
+        String selectQuery = "SELECT * FROM " + FavoriteData.TABLE_NAME;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        if (cursor.moveToFirst()) {
+            do {
+                if (ID.equals(cursor.getString(9)))
+                    return true;
+            } while (cursor.moveToNext());
+
+        }
+        return false;
     }
 
 

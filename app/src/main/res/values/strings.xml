@@ -4,8 +4,10 @@
 
     <string name="pref_order_most_popular">Most Popular</string>
     <string name="pref_order_top_rated">Top Rated</string>
+    <string name="pref_order_favorite">Favorites</string>
     <string name="pref_most_popular">most popular</string>
     <string name="pref_top_rated">top rated</string>
+    <string name="pref_favorites">favorites</string>
     <string name="pref_order_label">Sort By</string>
     <string name="pref_order_key">order</string>
 
