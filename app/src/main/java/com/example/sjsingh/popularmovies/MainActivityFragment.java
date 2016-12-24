@@ -140,7 +140,6 @@ public class MainActivityFragment extends Fragment {
             mGridData = db.getAllMovies(TABLE_NAME);
             mGridAdapter.setGridData(mGridData);
             mProgressBar.setVisibility(View.GONE);
-
             Toast.makeText(getActivity(), "No Internet Connection", Toast.LENGTH_SHORT).show();
         } else {
             mGridAdapter.clear();
