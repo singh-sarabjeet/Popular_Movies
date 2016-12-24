@@ -134,8 +134,7 @@ public class MainActivityFragment extends Fragment {
     public void updateData() {
 
         if (!haveNetworkConnection()) {
-            checkSharedPreferences();
-            mGridData = db.getAllMovies(TABLE_NAME);
+          
             mProgressBar.setVisibility(View.GONE);
             Toast.makeText(getActivity(), "No Internet Connection", Toast.LENGTH_SHORT).show();
         } else {
