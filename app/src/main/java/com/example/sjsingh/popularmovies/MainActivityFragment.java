@@ -141,6 +141,11 @@ public class MainActivityFragment extends Fragment {
             mGridAdapter.setGridData(mGridData);
             mProgressBar.setVisibility(View.GONE);
             Toast.makeText(getActivity(), "No Internet Connection", Toast.LENGTH_SHORT).show();
+        } else if (TABLE_NAME.equals(DatabaseContract.FavoriteData.TABLE_NAME)) {
+            mGridAdapter.clear();
+            mGridData = db.getAllMovies(TABLE_NAME);
+            mGridAdapter.setGridData(mGridData);
+            mProgressBar.setVisibility(View.GONE);
         } else {
             mGridAdapter.clear();
             Toast.makeText(getActivity(), "Downloading Data", Toast.LENGTH_SHORT).show();
@@ -148,7 +153,8 @@ public class MainActivityFragment extends Fragment {
             mProgressBar.setVisibility(View.VISIBLE);
 
         }
-    }
+        }
+
 
     private boolean haveNetworkConnection() {
         boolean haveConnectedWifi = false;
