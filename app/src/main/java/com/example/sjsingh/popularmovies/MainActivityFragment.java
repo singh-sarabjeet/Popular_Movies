@@ -67,6 +67,7 @@ public class MainActivityFragment extends Fragment {
 
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
@@ -87,7 +88,10 @@ public class MainActivityFragment extends Fragment {
 
         if (requestCode == SORT_ORDER_REPLY) {
 
-            updateData();
+
+            checkSharedPreferences();
+            Log.v(LOG_TAG, "IN ON ACTIVITY RESULT");
+
         }
     }
 
@@ -104,8 +108,9 @@ public class MainActivityFragment extends Fragment {
         db = new DatabaseHelper(getActivity());
 
         mGridData = new ArrayList<>();
-        checkSharedPreferences();
-        mGridData = db.getAllMovies(TABLE_NAME);
+
+       /* checkSharedPreferences();
+        mGridData = db.getAllMovies(TABLE_NAME);*/
         mGridAdapter = new ImageListAdapter(getActivity(), mGridData);
         mGridView.setAdapter(mGridAdapter);
 
@@ -127,6 +132,8 @@ public class MainActivityFragment extends Fragment {
             }
         });
 
+        Log.v(LOG_TAG, "In on create view");
+        checkSharedPreferences();
 
         updateData();
         return rootView;
@@ -135,19 +142,24 @@ public class MainActivityFragment extends Fragment {
 
     public void updateData() {
 
+
         if (!haveNetworkConnection()) {
-            checkSharedPreferences();
+
             mGridData = db.getAllMovies(TABLE_NAME);
+
             mGridAdapter.setGridData(mGridData);
             mProgressBar.setVisibility(View.GONE);
             Toast.makeText(getActivity(), "No Internet Connection", Toast.LENGTH_SHORT).show();
         } else if (TABLE_NAME.equals(DatabaseContract.FavoriteData.TABLE_NAME)) {
-            mGridAdapter.clear();
+
+
+            Log.v(LOG_TAG, "IN Favorite block");
             mGridData = db.getAllMovies(TABLE_NAME);
+
             mGridAdapter.setGridData(mGridData);
             mProgressBar.setVisibility(View.GONE);
         } else {
-            mGridAdapter.clear();
+
             Toast.makeText(getActivity(), "Downloading Data", Toast.LENGTH_SHORT).show();
             new FetchMovie().execute();
             mProgressBar.setVisibility(View.VISIBLE);
@@ -334,8 +346,11 @@ public class MainActivityFragment extends Fragment {
         @Override
         protected void onPostExecute(ArrayList<GridItem> result) {
 
-            if (result != null)
+            if (result != null) {
+
+
                 mGridAdapter.setGridData(result);
+            }
             mProgressBar.setVisibility(View.GONE);
         }
     }
