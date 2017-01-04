@@ -33,6 +33,7 @@ public class ImageListAdapter extends ArrayAdapter<GridItem> {
         notifyDataSetChanged();
     }
 
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View rootView = convertView;
@@ -56,6 +57,10 @@ public class ImageListAdapter extends ArrayAdapter<GridItem> {
                 .load(item.getImage())
                 .into(holder.imageView);
         return rootView;
+    }
+
+    public int getCount() {
+        return mGridData.size();
     }
 
     static class ViewHolder {

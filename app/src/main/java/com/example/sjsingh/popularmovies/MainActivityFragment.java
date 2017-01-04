@@ -57,14 +57,13 @@ public class MainActivityFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-
+        Log.i("fragment", "onCreate");
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 
         inflater.inflate(R.menu.main_menu, menu);
-
     }
 
 
@@ -88,19 +87,52 @@ public class MainActivityFragment extends Fragment {
 
         if (requestCode == SORT_ORDER_REPLY) {
 
-
-            checkSharedPreferences();
-            Log.v(LOG_TAG, "IN ON ACTIVITY RESULT");
-
+            updateData();
+            Log.i("fragment", "onActivityResult");
         }
     }
 
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        Log.i("fragment", "onAttach");
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.i("fragment", "onResume");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.i("fragment", "onPause");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        mGridAdapter.clear();
+        Log.i("fragment", "onStop");
+    }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.i("fragment", "onStart");
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
 
+        Log.i("fragment", "onCreateView");
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         mGridView = (GridView) rootView.findViewById(R.id.gridview_poster);
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
@@ -109,8 +141,11 @@ public class MainActivityFragment extends Fragment {
 
         mGridData = new ArrayList<>();
 
-       /* checkSharedPreferences();
-        mGridData = db.getAllMovies(TABLE_NAME);*/
+        if (!haveNetworkConnection()) {
+            checkSharedPreferences();
+            mGridData = db.getAllMovies(TABLE_NAME);
+        }
+
         mGridAdapter = new ImageListAdapter(getActivity(), mGridData);
         mGridView.setAdapter(mGridAdapter);
 
@@ -132,35 +167,32 @@ public class MainActivityFragment extends Fragment {
             }
         });
 
-        Log.v(LOG_TAG, "In on create view");
-        checkSharedPreferences();
-
         updateData();
+        Log.v(LOG_TAG, "In on create view");
         return rootView;
 
     }
 
     public void updateData() {
 
+        checkSharedPreferences();
 
         if (!haveNetworkConnection()) {
-
             mGridData = db.getAllMovies(TABLE_NAME);
-
             mGridAdapter.setGridData(mGridData);
+            mGridView.setAdapter(mGridAdapter);
             mProgressBar.setVisibility(View.GONE);
             Toast.makeText(getActivity(), "No Internet Connection", Toast.LENGTH_SHORT).show();
         } else if (TABLE_NAME.equals(DatabaseContract.FavoriteData.TABLE_NAME)) {
 
-
-            Log.v(LOG_TAG, "IN Favorite block");
             mGridData = db.getAllMovies(TABLE_NAME);
-
+            Log.v(LOG_TAG, "IN Favorite block");
             mGridAdapter.setGridData(mGridData);
+            mGridView.setAdapter(mGridAdapter);
             mProgressBar.setVisibility(View.GONE);
         } else {
-
-            Toast.makeText(getActivity(), "Downloading Data", Toast.LENGTH_SHORT).show();
+            mGridAdapter.clear();
+            //  Toast.makeText(getActivity(), "Downloading Data", Toast.LENGTH_SHORT).show();
             new FetchMovie().execute();
             mProgressBar.setVisibility(View.VISIBLE);
 
@@ -347,7 +379,6 @@ public class MainActivityFragment extends Fragment {
         protected void onPostExecute(ArrayList<GridItem> result) {
 
             if (result != null) {
-
 
                 mGridAdapter.setGridData(result);
             }

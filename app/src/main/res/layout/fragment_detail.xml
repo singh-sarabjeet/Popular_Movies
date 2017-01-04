@@ -44,6 +44,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingLeft="@dimen/standard_margin"
+                    android:text="jggghv,hjh"
                     android:textSize="@dimen/text_size_medium"
                     android:textStyle="bold" />
 
