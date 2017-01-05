@@ -6,8 +6,8 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     card_view:cardBackgroundColor="@color/color_white"
-    card_view:cardCornerRadius="10dp"
-    card_view:cardElevation="5dp"
+    card_view:cardCornerRadius="@dimen/card_corner_radius_review"
+    card_view:cardElevation="@dimen/card_elevation_review"
     card_view:cardUseCompatPadding="true">
 
     <ImageView

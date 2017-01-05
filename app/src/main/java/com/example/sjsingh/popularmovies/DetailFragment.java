@@ -1,6 +1,9 @@
 package com.example.sjsingh.popularmovies;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.sjsingh.popularmovies.data.DatabaseContract;
 import com.example.sjsingh.popularmovies.data.DatabaseHelper;
@@ -56,6 +60,7 @@ public class DetailFragment extends Fragment {
     ImageView poster_image;
     ImageView backdrop_image;
     String review;
+    View rootView;
     private RecyclerView mRecyclerView;
     private TrailerAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -78,10 +83,16 @@ public class DetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
 
-        View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
-
         Intent intent = getActivity().getIntent();
-        if (intent != null) {
+
+        if (!haveNetworkConnection())
+            Toast.makeText(getActivity(), "No Internet Connection", Toast.LENGTH_SHORT).show();
+        if (intent == null) {
+
+        } else {
+            rootView = inflater.inflate(R.layout.fragment_detail, container, false);
+
+
             title = intent.getStringExtra(getString(R.string.title_key));
             rating = intent.getStringExtra(getString(R.string.rating_key));
             r_date = intent.getStringExtra(getString(R.string.release_date_key));
@@ -90,7 +101,7 @@ public class DetailFragment extends Fragment {
             backdrop = intent.getStringExtra(getString(R.string.backdrop_key));
             review = intent.getStringExtra(getString(R.string.reviews));
             trailer = intent.getStringExtra(getString(R.string.trailers));
-            id = intent.getStringExtra("Id");
+            id = intent.getStringExtra(getString(R.string.Id));
 
 
             String rDateFinal = "Released:" + r_date;
@@ -117,80 +128,98 @@ public class DetailFragment extends Fragment {
                     .load(backdrop)
                     .into(backdrop_image);
 
-        }
 
-        LikeButton likeButton = (LikeButton) rootView.findViewById(R.id.like_button);
-        DatabaseHelper dbh = new DatabaseHelper(getActivity());
-        if (dbh.isExist(id)) {
-            likeButton.setLiked(true);
-        }
-        likeButton.setOnLikeListener(new OnLikeListener() {
-            @Override
-            public void liked(LikeButton likeButton) {
-                DatabaseHelper db = new DatabaseHelper(getActivity());
-                if (!(db.isExist(title))) {
-                    GridItem item = new GridItem();
-                    item.setTitle(title);
-                    item.setReview(review);
-                    item.setImage(poster);
-                    item.setPlot(plot);
-                    item.setRating(rating);
-                    item.setReleaseDate(r_date);
-                    item.setBackdrop(backdrop);
-                    item.setTrailer(trailer);
-                    item.setId(id);
-                    db.addMovie(item, DatabaseContract.FavoriteData.TABLE_NAME);
+            LikeButton likeButton = (LikeButton) rootView.findViewById(R.id.like_button);
+            DatabaseHelper dbh = new DatabaseHelper(getActivity());
+            if (dbh.isExist(id)) {
+                likeButton.setLiked(true);
+            }
+            likeButton.setOnLikeListener(new OnLikeListener() {
+                @Override
+                public void liked(LikeButton likeButton) {
+                    DatabaseHelper db = new DatabaseHelper(getActivity());
+                    if (!(db.isExist(title))) {
+                        GridItem item = new GridItem();
+                        item.setTitle(title);
+                        item.setReview(review);
+                        item.setImage(poster);
+                        item.setPlot(plot);
+                        item.setRating(rating);
+                        item.setReleaseDate(r_date);
+                        item.setBackdrop(backdrop);
+                        item.setTrailer(trailer);
+                        item.setId(id);
+                        db.addMovie(item, DatabaseContract.FavoriteData.TABLE_NAME);
+
+                    }
+                }
+
+                @Override
+                public void unLiked(LikeButton likeButton) {
+                    DatabaseHelper db = new DatabaseHelper(getActivity());
+                    db.deleteEntry(id);
 
                 }
-            }
+            });
+            myDataSet.clear();
+            reviewData.clear();
+            // New request for fetching the trailer data
+            new FetchReviews(review).execute();
+            new FetchTrailers(trailer).execute();
 
-            @Override
-            public void unLiked(LikeButton likeButton) {
-                DatabaseHelper db = new DatabaseHelper(getActivity());
-                db.deleteEntry(id);
-
-            }
-        });
-        myDataSet.clear();
-        reviewData.clear();
-        // New request for fetching the trailer data
-        new FetchReviews(review).execute();
-        new FetchTrailers(trailer).execute();
-
-        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.trailer_recycle_view);
-        mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+            mRecyclerView = (RecyclerView) rootView.findViewById(R.id.trailer_recycle_view);
+            mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
+            mRecyclerView.setHasFixedSize(true);
+            mRecyclerView.setLayoutManager(mLayoutManager);
+            mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
 
-        mAdapter = new TrailerAdapter(myDataSet, getContext());
+            mAdapter = new TrailerAdapter(myDataSet, getContext());
 
 
-        //New request for fetching the review data
+            //New request for fetching the review data
 
-        rRecyclerView = (RecyclerView) rootView.findViewById(R.id.review_recycle_view);
-        rLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        rRecyclerView.setHasFixedSize(true);
-        rRecyclerView.setLayoutManager(rLayoutManager);
-        rRecyclerView.setItemAnimator(new DefaultItemAnimator());
+            rRecyclerView = (RecyclerView) rootView.findViewById(R.id.review_recycle_view);
+            rLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+            rRecyclerView.setHasFixedSize(true);
+            rRecyclerView.setLayoutManager(rLayoutManager);
+            rRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
 
-        rAdapter = new ReviewAdapter(reviewData, getContext());
+            rAdapter = new ReviewAdapter(reviewData, getContext());
 
-        mRecyclerView.setAdapter(mAdapter);
-        rRecyclerView.setAdapter(rAdapter);
+            mRecyclerView.setAdapter(mAdapter);
+            rRecyclerView.setAdapter(rAdapter);
 
-        mAdapter.setOnItemClickListener(new TrailerAdapter.ClickListener() {
-            @Override
-            public void onItemClick(int position, View v) {
-                TrailerItem item = myDataSet.get(position);
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(item.getTrailer()));
-                startActivity(intent);
-            }
-        });
+            mAdapter.setOnItemClickListener(new TrailerAdapter.ClickListener() {
+                @Override
+                public void onItemClick(int position, View v) {
+                    TrailerItem item = myDataSet.get(position);
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(item.getTrailer()));
+                    startActivity(intent);
+                }
+            });
 
+
+        }
         return rootView;
+    }
+
+    public boolean haveNetworkConnection() {
+        boolean haveConnectedWifi = false;
+        boolean haveConnectedMobile = false;
+
+        ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo[] netInfo = cm.getAllNetworkInfo();
+        for (NetworkInfo ni : netInfo) {
+            if (ni.getTypeName().equalsIgnoreCase("WIFI"))
+                if (ni.isConnected())
+                    haveConnectedWifi = true;
+            if (ni.getTypeName().equalsIgnoreCase("MOBILE"))
+                if (ni.isConnected())
+                    haveConnectedMobile = true;
+        }
+        return haveConnectedWifi || haveConnectedMobile;
     }
 
     private ArrayList<TrailerItem> formatTrailerDataFromJson(String movieJsonStr) throws JSONException {

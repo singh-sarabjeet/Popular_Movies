@@ -44,7 +44,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingLeft="@dimen/standard_margin"
-                    android:text="jggghv,hjh"
                     android:textSize="@dimen/text_size_medium"
                     android:textStyle="bold" />
 
@@ -75,7 +74,7 @@
                     android:id="@+id/like_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:icon_size="15dp"
+                    app:icon_size="@dimen/like_heart_size"
                     app:icon_type="heart" />
 
                 <TextView
@@ -153,8 +152,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:nestedScrollingEnabled="false" />
-        <!-- android:orientation="horizontal"
-         android:scrollbars="none" -->
+
 
     </LinearLayout>
 </android.support.v4.widget.NestedScrollView>

@@ -57,7 +57,6 @@ public class MainActivityFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        Log.i("fragment", "onCreate");
     }
 
     @Override
@@ -88,51 +87,21 @@ public class MainActivityFragment extends Fragment {
         if (requestCode == SORT_ORDER_REPLY) {
 
             updateData();
-            Log.i("fragment", "onActivityResult");
         }
     }
 
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        Log.i("fragment", "onAttach");
-
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.i("fragment", "onResume");
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        Log.i("fragment", "onPause");
-    }
-
-    @Override
     public void onStop() {
         super.onStop();
-
-        mGridAdapter.clear();
-        Log.i("fragment", "onStop");
+        mGridData.clear();
     }
 
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        Log.i("fragment", "onStart");
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-
-        Log.i("fragment", "onCreateView");
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         mGridView = (GridView) rootView.findViewById(R.id.gridview_poster);
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
@@ -168,7 +137,6 @@ public class MainActivityFragment extends Fragment {
         });
 
         updateData();
-        Log.v(LOG_TAG, "In on create view");
         return rootView;
 
     }
@@ -186,21 +154,19 @@ public class MainActivityFragment extends Fragment {
         } else if (TABLE_NAME.equals(DatabaseContract.FavoriteData.TABLE_NAME)) {
 
             mGridData = db.getAllMovies(TABLE_NAME);
-            Log.v(LOG_TAG, "IN Favorite block");
             mGridAdapter.setGridData(mGridData);
             mGridView.setAdapter(mGridAdapter);
             mProgressBar.setVisibility(View.GONE);
         } else {
-            mGridAdapter.clear();
-            //  Toast.makeText(getActivity(), "Downloading Data", Toast.LENGTH_SHORT).show();
+            mGridData.clear();
             new FetchMovie().execute();
             mProgressBar.setVisibility(View.VISIBLE);
 
         }
-        }
+    }
 
 
-    private boolean haveNetworkConnection() {
+    public boolean haveNetworkConnection() {
         boolean haveConnectedWifi = false;
         boolean haveConnectedMobile = false;
 
@@ -379,7 +345,6 @@ public class MainActivityFragment extends Fragment {
         protected void onPostExecute(ArrayList<GridItem> result) {
 
             if (result != null) {
-
                 mGridAdapter.setGridData(result);
             }
             mProgressBar.setVisibility(View.GONE);

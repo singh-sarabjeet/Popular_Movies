@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import com.example.sjsingh.popularmovies.GridItem;
 import com.example.sjsingh.popularmovies.data.DatabaseContract.FavoriteData;
@@ -31,8 +30,8 @@ import static com.example.sjsingh.popularmovies.data.DatabaseContract.PopularMov
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 5;
-    public static final String DATABASE_NAME = "popularMoves.db";
+    public static final int DATABASE_VERSION = 1;
+    public static final String DATABASE_NAME = "Movie_database.db";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -119,7 +118,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_REVIEW, item.getReview());
         values.put(COLUMN_ID, item.getId());
 
-        Log.v("SQL LOG", "DATA INSERTED");
         db.insert(tableName, null, values);
         db.close();
 
@@ -138,13 +136,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public ArrayList<GridItem> getAllMovies(String Table_name) {
         ArrayList<GridItem> movieList = new ArrayList<GridItem>();
-        // Select All Query
+
         String selectQuery = "SELECT * FROM " + Table_name;
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
 
-        // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
                 GridItem item = new GridItem();
@@ -158,7 +155,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 item.setTrailer(cursor.getString(7));
                 item.setReview(cursor.getString(8));
                 item.setId(cursor.getString(9));
-                // Adding contact to list
+
                 movieList.add(item);
             } while (cursor.moveToNext());
         }
