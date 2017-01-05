@@ -91,12 +91,6 @@ public class MainActivityFragment extends Fragment {
     }
 
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        mGridData.clear();
-    }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -143,9 +137,11 @@ public class MainActivityFragment extends Fragment {
 
     public void updateData() {
 
+
         checkSharedPreferences();
 
         if (!haveNetworkConnection()) {
+            mGridData.clear();
             mGridData = db.getAllMovies(TABLE_NAME);
             mGridAdapter.setGridData(mGridData);
             mGridView.setAdapter(mGridAdapter);
@@ -153,6 +149,7 @@ public class MainActivityFragment extends Fragment {
             Toast.makeText(getActivity(), "No Internet Connection", Toast.LENGTH_SHORT).show();
         } else if (TABLE_NAME.equals(DatabaseContract.FavoriteData.TABLE_NAME)) {
 
+            mGridData.clear();
             mGridData = db.getAllMovies(TABLE_NAME);
             mGridAdapter.setGridData(mGridData);
             mGridView.setAdapter(mGridAdapter);
