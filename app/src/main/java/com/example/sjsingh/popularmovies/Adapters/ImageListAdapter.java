@@ -1,4 +1,4 @@
-package com.example.sjsingh.popularmovies;
+package com.example.sjsingh.popularmovies.Adapters;
 
 import android.app.Activity;
 import android.content.Context;
@@ -9,6 +9,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.sjsingh.popularmovies.Items.GridItem;
+import com.example.sjsingh.popularmovies.R;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;

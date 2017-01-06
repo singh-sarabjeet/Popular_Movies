@@ -19,6 +19,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.sjsingh.popularmovies.Adapters.ReviewAdapter;
+import com.example.sjsingh.popularmovies.Adapters.TrailerAdapter;
+import com.example.sjsingh.popularmovies.Items.GridItem;
+import com.example.sjsingh.popularmovies.Items.ReviewItem;
+import com.example.sjsingh.popularmovies.Items.TrailerItem;
 import com.example.sjsingh.popularmovies.data.DatabaseContract;
 import com.example.sjsingh.popularmovies.data.DatabaseHelper;
 import com.like.LikeButton;

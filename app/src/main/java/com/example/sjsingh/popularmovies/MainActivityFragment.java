@@ -23,6 +23,8 @@ import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.example.sjsingh.popularmovies.Adapters.ImageListAdapter;
+import com.example.sjsingh.popularmovies.Items.GridItem;
 import com.example.sjsingh.popularmovies.data.DatabaseContract;
 import com.example.sjsingh.popularmovies.data.DatabaseHelper;
 
