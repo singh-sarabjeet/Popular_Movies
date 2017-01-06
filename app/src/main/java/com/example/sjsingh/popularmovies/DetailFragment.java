@@ -87,11 +87,9 @@ public class DetailFragment extends Fragment {
 
         if (!haveNetworkConnection())
             Toast.makeText(getActivity(), "No Internet Connection", Toast.LENGTH_SHORT).show();
-        if (intent == null) {
+        if (intent != null) {
 
-        } else {
             rootView = inflater.inflate(R.layout.fragment_detail, container, false);
-
 
             title = intent.getStringExtra(getString(R.string.title_key));
             rating = intent.getStringExtra(getString(R.string.rating_key));
@@ -102,7 +100,6 @@ public class DetailFragment extends Fragment {
             review = intent.getStringExtra(getString(R.string.reviews));
             trailer = intent.getStringExtra(getString(R.string.trailers));
             id = intent.getStringExtra(getString(R.string.Id));
-
 
             String rDateFinal = "Released:" + r_date;
             String ratingFinal = rating + "/10";
@@ -116,7 +113,6 @@ public class DetailFragment extends Fragment {
             ((TextView) rootView.findViewById(R.id.plot_textview))
                     .setText(plot);
 
-
             poster_image = (ImageView) rootView.findViewById(R.id.poster);
             backdrop_image = (ImageView) rootView.findViewById(R.id.backdrop);
 
@@ -127,7 +123,6 @@ public class DetailFragment extends Fragment {
             Picasso.with(getContext())
                     .load(backdrop)
                     .into(backdrop_image);
-
 
             LikeButton likeButton = (LikeButton) rootView.findViewById(R.id.like_button);
             DatabaseHelper dbh = new DatabaseHelper(getActivity());
@@ -173,10 +168,6 @@ public class DetailFragment extends Fragment {
             mRecyclerView.setLayoutManager(mLayoutManager);
             mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
-
-            mAdapter = new TrailerAdapter(myDataSet, getContext());
-
-
             //New request for fetching the review data
 
             rRecyclerView = (RecyclerView) rootView.findViewById(R.id.review_recycle_view);
@@ -184,22 +175,6 @@ public class DetailFragment extends Fragment {
             rRecyclerView.setHasFixedSize(true);
             rRecyclerView.setLayoutManager(rLayoutManager);
             rRecyclerView.setItemAnimator(new DefaultItemAnimator());
-
-
-            rAdapter = new ReviewAdapter(reviewData, getContext());
-
-            mRecyclerView.setAdapter(mAdapter);
-            rRecyclerView.setAdapter(rAdapter);
-
-            mAdapter.setOnItemClickListener(new TrailerAdapter.ClickListener() {
-                @Override
-                public void onItemClick(int position, View v) {
-                    TrailerItem item = myDataSet.get(position);
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(item.getTrailer()));
-                    startActivity(intent);
-                }
-            });
-
 
         }
         return rootView;
@@ -373,6 +348,13 @@ public class DetailFragment extends Fragment {
             return null;
         }
 
+        @Override
+        protected void onPostExecute(ArrayList<ReviewItem> results) {
+
+            rAdapter = new ReviewAdapter(reviewData, getContext());
+            rRecyclerView.setAdapter(rAdapter);
+        }
+
     }
 
     public class FetchTrailers extends AsyncTask<Void, Void, ArrayList<TrailerItem>> {
@@ -452,6 +434,21 @@ public class DetailFragment extends Fragment {
 
             return null;
         }
+
+        @Override
+        protected void onPostExecute(ArrayList<TrailerItem> results) {
+            mAdapter = new TrailerAdapter(myDataSet, getContext());
+            mRecyclerView.setAdapter(mAdapter);
+            mAdapter.setOnItemClickListener(new TrailerAdapter.ClickListener() {
+                @Override
+                public void onItemClick(int position, View v) {
+                    TrailerItem item = myDataSet.get(position);
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(item.getTrailer()));
+                    startActivity(intent);
+                }
+            });
+        }
+
 
     }
 

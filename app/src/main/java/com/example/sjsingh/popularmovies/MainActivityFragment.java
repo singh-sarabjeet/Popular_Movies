@@ -85,8 +85,6 @@ public class MainActivityFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == SORT_ORDER_REPLY) {
-
-            updateData();
         }
     }
 
@@ -130,9 +128,14 @@ public class MainActivityFragment extends Fragment {
             }
         });
 
-        updateData();
+
         return rootView;
 
+    }
+
+    public void onResume() {
+        super.onResume();
+        updateData();
     }
 
     public void updateData() {
@@ -155,6 +158,7 @@ public class MainActivityFragment extends Fragment {
             mGridView.setAdapter(mGridAdapter);
             mProgressBar.setVisibility(View.GONE);
         } else {
+            mGridAdapter.clear();
             mGridData.clear();
             new FetchMovie().execute();
             mProgressBar.setVisibility(View.VISIBLE);
@@ -342,6 +346,7 @@ public class MainActivityFragment extends Fragment {
         protected void onPostExecute(ArrayList<GridItem> result) {
 
             if (result != null) {
+
                 mGridAdapter.setGridData(result);
             }
             mProgressBar.setVisibility(View.GONE);
