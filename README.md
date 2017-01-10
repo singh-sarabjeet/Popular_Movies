@@ -12,7 +12,7 @@ This app reveals the power of adaptive UI both for phone and tablet devices.
   
 ## Using The Source
  
- This app uses [The Movie Database](https://www.themoviedb.org/documentation/api) API to retrieve movies. You must provide your own API key in order to build the app. When you get it, just paste it to:  app/build.gradle 
+ This app uses [The Movie Database](https://www.themoviedb.org/documentation/api) API to retrieve movies. You must provide your own API key in order to build the app. When you get it, just paste it to: ``` app/build.gradle ```
  
  
 ## Screens
