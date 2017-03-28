@@ -17,7 +17,8 @@ This app reveals the power of adaptive UI both for phone and tablet devices.
  
 ## Screens
 
-
+![Main Screen](https://github.com/sjsingh200893/Popular_Movies/blob/master/app/Screens/MainScreen.png)
+![Detail Screen](https://github.com/sjsingh200893/Popular_Movies/blob/master/app/Screens/DetailScreen.png)
 
 
 
