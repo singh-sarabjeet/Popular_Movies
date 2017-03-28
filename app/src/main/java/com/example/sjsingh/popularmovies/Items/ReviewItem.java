@@ -1,4 +1,4 @@
-package com.example.sjsingh.popularmovies.Items;
+package com.example.sjsingh.popularmovies.items;
 
 /**
  * Created by Sarabjeet Singh on 10-12-2016.

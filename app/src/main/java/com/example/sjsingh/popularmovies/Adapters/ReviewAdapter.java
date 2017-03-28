@@ -1,4 +1,4 @@
-package com.example.sjsingh.popularmovies.Adapters;
+package com.example.sjsingh.popularmovies.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -7,8 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.sjsingh.popularmovies.Items.ReviewItem;
 import com.example.sjsingh.popularmovies.R;
+import com.example.sjsingh.popularmovies.items.ReviewItem;
 
 import java.util.ArrayList;
 

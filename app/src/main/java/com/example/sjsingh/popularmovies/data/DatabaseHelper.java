@@ -6,10 +6,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.example.sjsingh.popularmovies.Items.GridItem;
 import com.example.sjsingh.popularmovies.data.DatabaseContract.FavoriteData;
 import com.example.sjsingh.popularmovies.data.DatabaseContract.PopularMovieData;
 import com.example.sjsingh.popularmovies.data.DatabaseContract.TopMovieData;
+import com.example.sjsingh.popularmovies.items.GridItem;
 
 import java.util.ArrayList;
 
