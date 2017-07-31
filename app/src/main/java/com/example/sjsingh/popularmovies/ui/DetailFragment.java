@@ -1,4 +1,4 @@
-package com.example.sjsingh.popularmovies;
+package com.example.sjsingh.popularmovies.ui;
 
 import android.content.Context;
 import android.content.Intent;
@@ -19,6 +19,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.sjsingh.popularmovies.BuildConfig;
+import com.example.sjsingh.popularmovies.R;
 import com.example.sjsingh.popularmovies.adapters.ReviewAdapter;
 import com.example.sjsingh.popularmovies.adapters.TrailerAdapter;
 import com.example.sjsingh.popularmovies.data.DatabaseContract;
