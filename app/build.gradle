@@ -39,7 +39,8 @@ dependencies {
     compile 'com.github.jd-alexander:LikeButton:0.2.0'
     compile 'com.android.support:design:25.3.1'
     compile 'com.airbnb.android:lottie:2.1.0'
-    testCompile 'junit:junit:4.12'
     compile 'com.android.support:percent:25.3.1'
+    compile 'com.android.support.constraint:constraint-layout:+'
+    testCompile 'junit:junit:4.12'
     debugCompile 'com.amitshekhar.android:debug-db:0.4.0'
 }
